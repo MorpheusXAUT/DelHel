@@ -265,7 +265,90 @@
     }
   },
   "LOWI": {
-    "sids": {}
+    "sids": {
+      "ADILO": {
+        "cfl": 16000,
+        "rwys": {
+          "08": {
+            "dep": "ADILO2J"
+          },
+          "26": {
+            "dep": "ADILO3H"
+          }
+        }
+      },
+      "BRENO": {
+        "cfl": 12000,
+        "rwys": {
+          "08": {
+            "dep": "BRENO2J"
+          },
+          "26": {
+            "dep": "BRENO3H"
+          }
+        }
+      },
+      "KOGOL": {
+        "cfl": 12000,
+        "rwys": {
+          "08": {
+            "dep": "KOGOL3J"
+          },
+          "26": {
+            "dep": "KOGOL4H"
+          }
+        }
+      },
+      "KPT": {
+        "cfl": 16000,
+        "rwys": {
+          "08": {
+            "dep": "KPT5J"
+          }
+        }
+      },
+      "MOGTI": {
+        "cfl": 16000,
+        "rwys": {
+          "26": {
+            "dep": "MOGTI3H"
+          }
+        }
+      },
+      "OBEDI": {
+        "cfl": 12000,
+        "rwys": {
+          "08": {
+            "dep": "OBEDI3J"
+          },
+          "26": {
+            "dep": "OBEDI4H"
+          }
+        }
+      },
+      "RTT": {
+        "cfl": 12000,
+        "rwys": {
+          "08": {
+            "dep": "RTT3J"
+          },
+          "26": {
+            "dep": "RTT4H"
+          }
+        }
+      },
+      "UNKEN": {
+        "cfl": 12000,
+        "rwys": {
+          "08": {
+            "dep": "UNKEN2J"
+          },
+          "26": {
+            "dep": "UNKEN3H"
+          }
+        }
+      }
+    }
   },
   "LOWS": {
     "sids": {}
