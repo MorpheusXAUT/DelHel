@@ -4,9 +4,9 @@
 
 #define PLUGIN_NAME    "DelHel"
 #define PLUGIN_VERSION "0.0.1"
-#define PLUGIN_AUTHOR  "Nick Müller"
+#define PLUGIN_AUTHOR  "Nick Mueller"
 #define PLUGIN_LICENSE "MIT"
-#define PLUGIN_LATEST_VERSION_URL "https://gist.githubusercontent.com/MorpheusXAUT/a183ab60b455ced5d4fc5cc0d87e916e/raw/525de72c4a78f28dfcabc1a548c39df8e779f83e/version.txt"
+#define PLUGIN_LATEST_VERSION_URL "https://raw.githubusercontent.com/MorpheusXAUT/DelHel/master/DelHel/version.txt"
 #define PLUGIN_LATEST_DOWNLOAD_URL "https://github.com/MorpheusXAUT/DelHel/releases/latest"
 
 const char SETTINGS_DELIMITER = '|';
