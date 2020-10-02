@@ -283,9 +283,17 @@ void CDelHel::ReadAirportConfig()
 				};
 
 				s.rwys.emplace(si.rwy, si);
+				ap.rwys.insert(si.rwy);
 			}
 
 			ap.sids.emplace(wp, s);
+
+			std::ostringstream rrs;
+			rrs << icao << "\\/(";
+			std::copy(ap.rwys.begin(), ap.rwys.end(), std::ostream_iterator<std::string>(rrs, "|"));
+			rrs << ')';
+
+			ap.rwy_regex = std::regex(rrs.str(), std::regex_constants::ECMAScript);
 		}
 
 		this->airports.emplace(icao, ap);
@@ -397,6 +405,10 @@ void CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bool nap
 	auto rit = route.begin();
 	while (rit != route.end()) {
 		if (std::regex_search(*rit, REGEX_SPEED_LEVEL_GROUP)) {
+			++rit;
+			continue;
+		}
+		else if (std::regex_search(*rit, ap.rwy_regex)) {
 			++rit;
 			continue;
 		}

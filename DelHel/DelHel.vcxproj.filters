@@ -82,7 +82,7 @@
     </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="version.txt">
+    <Text Include="..\version.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>
