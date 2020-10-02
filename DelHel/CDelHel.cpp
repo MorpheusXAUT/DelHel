@@ -26,6 +26,7 @@ CDelHel::CDelHel() : EuroScopePlugIn::CPlugIn(
 	this->debug = false;
 	this->updateCheck = true;
 	this->assignNap = false;
+	this->autoProcess = false;
 
 	this->LoadSettings();
 
@@ -96,9 +97,31 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 
 			return true;
 		}
+		else if (args[1] == "auto") {
+			if (this->autoProcess) {
+				this->LogMessage("No longer automatically processing flightplans", "Config");
+			}
+			else {
+				this->LogMessage("Automatically processing flightplans", "Config");
+			}
+
+			this->autoProcess = !this->autoProcess;
+
+			return true;
+		}
 		else if (args[1] == "reload") {
 			this->LogMessage("Reloading airport config", "Config");
 
+			this->airports.clear();
+			this->ReadAirportConfig();
+
+			return true;
+		}
+		else if (args[1] == "reset") {
+			this->LogMessage("Resetting plugin state", "Config");
+
+			this->autoProcess = false;
+			this->processed.clear();
 			this->airports.clear();
 			this->ReadAirportConfig();
 
@@ -159,6 +182,14 @@ void CDelHel::OnTimer(int Counter)
 	if (this->updateCheck && this->latestVersion.valid() && this->latestVersion.wait_for(0ms) == std::future_status::ready) {
 		this->CheckForUpdate();
 	}
+	if (this->autoProcess && Counter % 5 == 0) {
+		this->AutoProcessFlightPlans();
+	}
+}
+
+void CDelHel::OnFlightPlanDisconnect(EuroScopePlugIn::CFlightPlan FlightPlan)
+{
+	this->processed.erase(std::remove(this->processed.begin(), this->processed.end(), FlightPlan.GetCallsign()), this->processed.end());
 }
 
 void CDelHel::LoadSettings()
@@ -354,7 +385,7 @@ void CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bool nap
 
 	auto ait = this->airports.find(dep);
 	if (ait == this->airports.end()) {
-		this->LogMessage("Invalid flightplan, did not find departure airport \"" + dep + "\" in airport config", cs);
+		this->LogDebugMessage("Failed to process flightplan, did not find departure airport \"" + dep + "\" in airport config", cs);
 		return;
 	}
 
@@ -437,6 +468,50 @@ void CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bool nap
 	}
 
 	this->LogDebugMessage("Successfully processed flightplan", cs);
+
+	// Add to list of processed flightplans if not added by auto-processing already
+	this->IsFlightPlanProcessed(fp);
+}
+
+bool CDelHel::IsFlightPlanProcessed(const EuroScopePlugIn::CFlightPlan& fp)
+{
+	std::string cs = fp.GetCallsign();
+	
+	if (std::find(this->processed.begin(), this->processed.end(), cs) != this->processed.end()) {
+		return true;
+	}
+
+	this->processed.push_back(cs);
+	return false;
+}
+
+void CDelHel::AutoProcessFlightPlans()
+{
+	for (EuroScopePlugIn::CRadarTarget rt = this->RadarTargetSelectFirst(); rt.IsValid(); rt = this->RadarTargetSelectNext(rt)) {
+		EuroScopePlugIn::CRadarTargetPositionData pos = rt.GetPosition();
+		// Skip auto-processing if aircraft is not on the ground (currently using flightlevel threshold)
+		// TODO better option for finding aircraft on ground
+		if (!pos.IsValid() || pos.GetFlightLevel() > AUTO_ASSIGN_MIN_FL) {
+			continue;
+		}
+
+		EuroScopePlugIn::CFlightPlan fp = rt.GetCorrelatedFlightPlan();
+		// Skip auto-processing if aircraft is tracked (with exception of aircraft tracked by current controller)
+		if (!fp.IsValid() || (strcmp(fp.GetTrackingControllerId(), "") != 0 && !fp.GetTrackingControllerIsMe())) {
+			continue;
+		}
+
+		// Skip auto-processing for aircraft without a valid flightplan (no departure/destination airport)
+		if (strcmp(fp.GetFlightPlanData().GetOrigin(), "") == 0 || strcmp(fp.GetFlightPlanData().GetDestination(), "") == 0) {
+			continue;
+		}
+
+		if (this->IsFlightPlanProcessed(fp)) {
+			continue;
+		}
+
+		this->ProcessFlightPlan(fp, this->assignNap);
+	}
 }
 
 void CDelHel::LogMessage(std::string message)

@@ -7,6 +7,7 @@
 #include <future>
 #include <fstream>
 #include <filesystem>
+#include <algorithm>
 
 #include "EuroScope/EuroScopePlugIn.h"
 #include "semver/semver.hpp"
@@ -30,13 +31,16 @@ public:
 	void OnGetTagItem(EuroScopePlugIn::CFlightPlan FlightPlan, EuroScopePlugIn::CRadarTarget RadarTarget, int ItemCode, int TagData, char sItemString[16], int* pColorCode, COLORREF* pRGB, double* pFontSize);
 	void OnFunctionCall(int FunctionId, const char* sItemString, POINT Pt, RECT Area);
 	void OnTimer(int Counter);
+	void OnFlightPlanDisconnect(EuroScopePlugIn::CFlightPlan FlightPlan);
 
 private:
 	bool debug;
 	bool updateCheck;
 	bool assignNap;
+	bool autoProcess;
 	std::future<std::string> latestVersion;
 	std::map<std::string, airport> airports;
+	std::vector<std::string> processed;
 
 	void LoadSettings();
 	void SaveSettings();
@@ -44,6 +48,8 @@ private:
 
 	validation_result ValidateFlightPlan(const EuroScopePlugIn::CFlightPlan& fp);
 	void ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bool nap);
+	bool IsFlightPlanProcessed(const EuroScopePlugIn::CFlightPlan& fp);
+	void AutoProcessFlightPlans();
 
 	void LogMessage(std::string message);
 	void LogMessage(std::string message, std::string handler);

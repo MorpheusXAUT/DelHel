@@ -11,6 +11,6 @@ struct sidinfo {
 
 struct sid {
 	std::string wp;
-	int cfl;
+	int cfl{};
 	std::map<std::string, sidinfo> rwys;
 };
