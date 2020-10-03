@@ -2,7 +2,7 @@
 
 #include <string>
 
-struct validation_result {
+struct validation {
 	bool valid;
 	std::string tag;
 	COLORREF color;

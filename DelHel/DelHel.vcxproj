@@ -231,7 +231,7 @@
     <ClInclude Include="sid.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="helpers.h" />
-    <ClInclude Include="validation_result.h" />
+    <ClInclude Include="validation.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DelHel.rc" />

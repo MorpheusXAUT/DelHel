@@ -16,7 +16,7 @@
 #include "constants.h"
 #include "helpers.h"
 #include "airport.h"
-#include "validation_result.h"
+#include "validation.h"
 
 using json = nlohmann::json;
 using namespace std::chrono_literals;
@@ -46,8 +46,7 @@ private:
 	void SaveSettings();
 	void ReadAirportConfig();
 
-	validation_result ValidateFlightPlan(const EuroScopePlugIn::CFlightPlan& fp);
-	void ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bool nap);
+	validation ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bool nap, bool validateOnly = false);
 	bool IsFlightPlanProcessed(const EuroScopePlugIn::CFlightPlan& fp);
 	void AutoProcessFlightPlans();
 

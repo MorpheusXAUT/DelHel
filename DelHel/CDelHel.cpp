@@ -24,7 +24,7 @@ CDelHel::CDelHel() : EuroScopePlugIn::CPlugIn(
 	this->RegisterTagItemFunction("Process FPL (NAP)", TAG_FUNC_PROCESS_FP_NAP);
 
 	this->debug = false;
-	this->updateCheck = true;
+	this->updateCheck = false;
 	this->assignNap = false;
 	this->autoProcess = false;
 
@@ -140,7 +140,7 @@ void CDelHel::OnGetTagItem(EuroScopePlugIn::CFlightPlan FlightPlan, EuroScopePlu
 
 	switch (ItemCode) {
 	case TAG_ITEM_FP_VALIDATION:
-		validation_result res = this->ValidateFlightPlan(FlightPlan);
+		validation res = this->ProcessFlightPlan(FlightPlan, this->assignNap, true);
 
 		strcpy_s(sItemString, 16, res.tag.c_str());
 
@@ -300,18 +300,33 @@ void CDelHel::ReadAirportConfig()
 	}
 }
 
-validation_result CDelHel::ValidateFlightPlan(const EuroScopePlugIn::CFlightPlan& fp)
+validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bool nap, bool validateOnly)
 {
-	validation_result res{
+	validation res{
 		true, // valid
 		"", // tag
 		TAG_COLOR_NONE // color
 	};
+	std::string cs = fp.GetCallsign();
+
+	if (!validateOnly) {
+		if (nap) {
+			this->LogDebugMessage("Processing flightplan using noise abatement procedures", cs);
+		}
+		else {
+			this->LogDebugMessage("Processing flightplan", cs);
+		}
+	}
 
 	EuroScopePlugIn::CFlightPlanData fpd = fp.GetFlightPlanData();
 
 	if (fpd.GetPlanType() == "V" || fpd.GetPlanType() == "Z") {
+		if (!validateOnly) {
+			this->LogDebugMessage("Skipping processing of VFR flightplan", cs);
+		}
+
 		res.tag = "VFR";
+
 		return res;
 	}
 
@@ -323,78 +338,15 @@ validation_result CDelHel::ValidateFlightPlan(const EuroScopePlugIn::CFlightPlan
 
 	auto ait = this->airports.find(dep);
 	if (ait == this->airports.end()) {
+		if (!validateOnly) {
+			this->LogDebugMessage("Failed to process flightplan, did not find departure airport \"" + dep + "\" in airport config", cs);
+		}
+
 		res.valid = false;
 		res.tag = "ADEP";
 		res.color = TAG_COLOR_RED;
+
 		return res;
-	}
-
-	airport ap = ait->second;
-
-	std::vector<std::string> route = split(fpd.GetRoute());
-	sid sid;
-
-	auto rit = route.begin();
-	while (rit != route.end()) {
-		if (std::regex_search(*rit, REGEX_SPEED_LEVEL_GROUP)) {
-			++rit;
-			continue;
-		}
-
-		auto sit = ap.sids.find(*rit);
-		if (sit != ap.sids.end()) {
-			sid = sit->second;
-			break;
-		}
-
-		rit = route.erase(rit);
-	}
-
-	if (sid.wp == "" || route.size() == 0) {
-		res.valid = false;
-		res.tag = "SID";
-		res.color = TAG_COLOR_RED;
-		return res;
-	}
-
-	EuroScopePlugIn::CFlightPlanControllerAssignedData cad = fp.GetControllerAssignedData();
-
-	if (cad.GetClearedAltitude() != sid.cfl) {
-		res.valid = false;
-		res.tag = "CFL";
-	}
-
-	return res;
-}
-
-void CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bool nap)
-{
-	std::string cs = fp.GetCallsign();
-
-	if (nap) {
-		this->LogDebugMessage("Processing flightplan using noise abatement procedures", cs);
-	}
-	else {
-		this->LogDebugMessage("Processing flightplan", cs);
-	}
-
-	EuroScopePlugIn::CFlightPlanData fpd = fp.GetFlightPlanData();
-
-	if (fpd.GetPlanType() == "V" || fpd.GetPlanType() == "Z") {
-		this->LogDebugMessage("Skipping processing of VFR flightplan", cs);
-		return;
-	}
-
-	std::string dep = fpd.GetOrigin();
-	to_upper(dep);
-
-	std::string arr = fpd.GetDestination();
-	to_upper(arr);
-
-	auto ait = this->airports.find(dep);
-	if (ait == this->airports.end()) {
-		this->LogDebugMessage("Failed to process flightplan, did not find departure airport \"" + dep + "\" in airport config", cs);
-		return;
 	}
 
 	airport ap = ait->second;
@@ -410,6 +362,7 @@ void CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bool nap
 		}
 		else if (std::regex_search(*rit, ap.rwy_regex)) {
 			++rit;
+			res.tag = "RWY";
 			continue;
 		}
 
@@ -423,66 +376,95 @@ void CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bool nap
 	}
 
 	if (sid.wp == "" || route.size() == 0) {
-		this->LogMessage("Invalid flightplan, no valid SID waypoint found in route", cs);
-		return;
-	}
+		if (!validateOnly) {
+			this->LogMessage("Invalid flightplan, no valid SID waypoint found in route", cs);
+		}
 
-	if (!fpd.SetRoute(join(route).c_str())) {
-		this->LogMessage("Failed to process flightplan, cannot set cleaned route", cs);
-		return;
-	}
+		res.valid = false;
+		res.tag = "SID";
+		res.color = TAG_COLOR_RED;
 
-	if (!fpd.AmendFlightPlan()) {
-		this->LogMessage("Failed to process flightplan, cannot amend flightplan after setting cleaned route", cs);
-		return;
-	}
-
-	std::string rwy = fpd.GetDepartureRwy();
-	if (rwy == "") {
-		this->LogMessage("Failed to process flightplan, no runway assigned", cs);
-		return;
-	}
-
-	auto sit = sid.rwys.find(rwy);
-	if (sit == sid.rwys.end()) {
-		this->LogMessage("Invalid flightplan, no matching SID found for runway", cs);
-		return;
-	}
-
-	sidinfo sidinfo = sit->second;
-
-	std::ostringstream sssid;
-	if (nap && sidinfo.nap != "") {
-		sssid << sidinfo.nap;
-	}
-	else {
-		sssid << sidinfo.dep;
-	}
-	sssid << "/" << rwy;
-
-	route.insert(route.begin(), sssid.str());
-
-	if (!fpd.SetRoute(join(route).c_str())) {
-		this->LogMessage("Failed to process flightplan, cannot set route including SID", cs);
-		return;
-	}
-
-	if (!fpd.AmendFlightPlan()) {
-		this->LogMessage("Failed to process flightplan, cannot amend flightplan after setting route including SID", cs);
-		return;
+		return res;
 	}
 
 	EuroScopePlugIn::CFlightPlanControllerAssignedData cad = fp.GetControllerAssignedData();
 
-	if (!cad.SetClearedAltitude(sid.cfl)) {
-		this->LogMessage("Failed to process flightplan, cannot set cleared flightlevel", cs);
-		return;
+	if (validateOnly) {
+		if (cad.GetClearedAltitude() != sid.cfl) {
+			res.valid = false;
+			res.tag = "CFL";
+
+			return res;
+		}
+	}
+	else {
+		if (!fpd.SetRoute(join(route).c_str())) {
+			this->LogMessage("Failed to process flightplan, cannot set cleaned route", cs);
+			return res;
+		}
+
+		if (!fpd.AmendFlightPlan()) {
+			this->LogMessage("Failed to process flightplan, cannot amend flightplan after setting cleaned route", cs);
+			return res;
+		}
+
+		std::string rwy = fpd.GetDepartureRwy();
+		if (rwy == "") {
+			this->LogMessage("Failed to process flightplan, no runway assigned", cs);
+
+			res.valid = false;
+			res.tag = "RWY";
+			res.color = TAG_COLOR_RED;
+
+			return res;
+		}
+
+		auto sit = sid.rwys.find(rwy);
+		if (sit == sid.rwys.end()) {
+			this->LogMessage("Invalid flightplan, no matching SID found for runway", cs);
+
+			res.valid = false;
+			res.tag = "SID";
+			res.color = TAG_COLOR_RED;
+
+			return res;
+		}
+
+		sidinfo sidinfo = sit->second;
+
+		std::ostringstream sssid;
+		if (nap && sidinfo.nap != "") {
+			sssid << sidinfo.nap;
+		}
+		else {
+			sssid << sidinfo.dep;
+		}
+		sssid << "/" << rwy;
+
+		route.insert(route.begin(), sssid.str());
+
+		if (!fpd.SetRoute(join(route).c_str())) {
+			this->LogMessage("Failed to process flightplan, cannot set route including SID", cs);
+			return res;
+		}
+
+		if (!fpd.AmendFlightPlan()) {
+			this->LogMessage("Failed to process flightplan, cannot amend flightplan after setting route including SID", cs);
+			return res;
+		}
+
+		if (!cad.SetClearedAltitude(sid.cfl)) {
+			this->LogMessage("Failed to process flightplan, cannot set cleared flightlevel", cs);
+			return res;
+		}
+
+		this->LogDebugMessage("Successfully processed flightplan", cs);
+
+		// Add to list of processed flightplans if not added by auto-processing already
+		this->IsFlightPlanProcessed(fp);
 	}
 
-	this->LogDebugMessage("Successfully processed flightplan", cs);
-
-	// Add to list of processed flightplans if not added by auto-processing already
-	this->IsFlightPlanProcessed(fp);
+	return res;
 }
 
 bool CDelHel::IsFlightPlanProcessed(const EuroScopePlugIn::CFlightPlan& fp)
