@@ -25,3 +25,4 @@ const COLORREF TAG_COLOR_GREEN = RGB(0, 200, 0);
 const std::regex REGEX_SPEED_LEVEL_GROUP = std::regex("(((?:N|K)\\d{4})((?:F\\d{3})|(?:S\\d{4})|(?:A\\d{3})|(?:M\\d{4})|(?:VFR)))", std::regex_constants::ECMAScript);
 
 const int AUTO_ASSIGN_MIN_FL = 5000;
+const int VFR_TRAFFIC_PATTERN_ALTITUDE = 1000;

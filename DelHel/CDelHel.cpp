@@ -247,6 +247,7 @@ void CDelHel::ReadAirportConfig()
 	for (auto& [icao, jap] : j.items()) {
 		airport ap{
 			icao, // icao
+			jap.value<int>("elevation", 0) // elevation
 		};
 
 		json jss;
@@ -320,16 +321,6 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 
 	EuroScopePlugIn::CFlightPlanData fpd = fp.GetFlightPlanData();
 
-	if (fpd.GetPlanType() == "V" || fpd.GetPlanType() == "Z") {
-		if (!validateOnly) {
-			this->LogDebugMessage("Skipping processing of VFR flightplan", cs);
-		}
-
-		res.tag = "VFR";
-
-		return res;
-	}
-
 	std::string dep = fpd.GetOrigin();
 	to_upper(dep);
 
@@ -350,6 +341,22 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 	}
 
 	airport ap = ait->second;
+	EuroScopePlugIn::CFlightPlanControllerAssignedData cad = fp.GetControllerAssignedData();
+
+	if (strcmp(fpd.GetPlanType(), "V") == 0 || strcmp(fpd.GetPlanType(), "Z") == 0) {
+		if (!validateOnly) {
+			if (!cad.SetClearedAltitude(round_to_closest(ap.elevation + VFR_TRAFFIC_PATTERN_ALTITUDE, 500))) {
+				this->LogMessage("Failed to process VFR flightplan, cannot set cleared flightlevel", cs);
+				return res;
+			}
+
+			this->LogDebugMessage("Skipping processing of VFR flightplan route", cs);
+		}
+
+		res.tag = "VFR";
+
+		return res;
+	}
 
 	std::vector<std::string> route = split(fpd.GetRoute());
 	sid sid;
@@ -386,8 +393,6 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 
 		return res;
 	}
-
-	EuroScopePlugIn::CFlightPlanControllerAssignedData cad = fp.GetControllerAssignedData();
 
 	if (validateOnly) {
 		if (cad.GetClearedAltitude() != sid.cfl) {

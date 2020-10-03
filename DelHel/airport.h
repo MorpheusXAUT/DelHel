@@ -9,6 +9,7 @@
 
 struct airport {
 	std::string icao;
+	int elevation;
 	std::map<std::string, sid> sids;
 	std::set<std::string> rwys;
 	std::regex rwy_regex;

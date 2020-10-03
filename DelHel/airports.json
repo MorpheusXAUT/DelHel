@@ -1,5 +1,6 @@
 {
   "LOWW": {
+    "elevation": 600,
     "sids": {
       "ADAMA": {
         "cfl": 5000,
@@ -265,6 +266,7 @@
     }
   },
   "LOWI": {
+    "elevation": 1907,
     "sids": {
       "ADILO": {
         "cfl": 16000,
@@ -351,6 +353,7 @@
     }
   },
   "LOWS": {
+    "elevation": 1420,
     "sids": {
       "DETSA": {
         "cfl": 10000,
@@ -451,6 +454,7 @@
     }
   },
   "LOWL": {
+    "elevation":  980,
     "sids": {
       "LIDSI": {
         "cfl": 6000,
@@ -510,6 +514,7 @@
     }
   },
   "LOWG": {
+    "elevation": 1120,
     "sids": {
       "ABIRI": {
         "cfl": 16000,
@@ -613,6 +618,7 @@
     }
   },
   "LOWK": {
+    "elevation": 1472,
     "sids": {
       "ABIRI": {
         "cfl": 16000,
