@@ -351,15 +351,346 @@
     }
   },
   "LOWS": {
-    "sids": {}
+    "sids": {
+      "DETSA": {
+        "cfl": 10000,
+        "rwys": {
+          "15": {
+            "dep": "DETSA2B"
+          },
+          "33": {
+            "dep": "DETSA1A"
+          }
+        }
+      },
+      "INROM": {
+        "cfl": 6000,
+        "rwys": {
+          "15": {
+            "dep": "INROM1B"
+          },
+          "33": {
+            "dep": "INROM1A"
+          }
+        }
+      },
+      "NEMAL": {
+        "cfl": 6000,
+        "rwys": {
+          "15": {
+            "dep": "NEMAL3B"
+          },
+          "33": {
+            "dep": "NEMAL3A"
+          }
+        }
+      },
+      "RTT": {
+        "cfl": 10000,
+        "rwys": {
+          "15": {
+            "dep": "RTT4B"
+          },
+          "33": {
+            "dep": "RTT3A"
+          }
+        }
+      },
+      "SBG": {
+        "cfl": 6000,
+        "rwys": {
+          "33": {
+            "dep": "SBG2A"
+          }
+        }
+      },
+      "SIMBA": {
+        "cfl": 6000,
+        "rwys": {
+          "15": {
+            "dep": "INROM1B"
+          },
+          "33": {
+            "dep": "INROM1A"
+          }
+        }
+      },
+      "TITIG": {
+        "cfl": 6000,
+        "rwys": {
+          "15": {
+            "dep": "TITIG3B"
+          },
+          "33": {
+            "dep": "TITIG2A"
+          }
+        }
+      },
+      "TRAUN": {
+        "cfl": 8000,
+        "rwys": {
+          "15": {
+            "dep": "TRAUN3B"
+          },
+          "33": {
+            "dep": "TRAUN2A"
+          }
+        }
+      },
+      "VERDA": {
+        "cfl": 10000,
+        "rwys": {
+          "15": {
+            "dep": "VERDA2B"
+          },
+          "33": {
+            "dep": "VERDA1A"
+          }
+        }
+      }
+    }
   },
   "LOWL": {
-    "sids": {}
+    "sids": {
+      "LIDSI": {
+        "cfl": 6000,
+        "rwys": {
+          "08": {
+            "dep": "LIDSI1E"
+          },
+          "26": {
+            "dep": "LIDSI1W"
+          }
+        }
+      },
+      "LIMRA": {
+        "cfl": 8000,
+        "rwys": {
+          "08": {
+            "dep": "LIMRA1E"
+          },
+          "26": {
+            "dep": "LIMRA1W"
+          }
+        }
+      },
+      "LNZ": {
+        "cfl": 4000,
+        "rwys": {
+          "08": {
+            "dep": "LNZ2T"
+          },
+          "26": {
+            "dep": "LNZ2L"
+          }
+        }
+      },
+      "PEROL": {
+        "cfl": 68000,
+        "rwys": {
+          "08": {
+            "dep": "PEROL1E"
+          },
+          "26": {
+            "dep": "PEROL1W"
+          }
+        }
+      },
+      "PETEN": {
+        "cfl": 68000,
+        "rwys": {
+          "08": {
+            "dep": "PETEN1E"
+          },
+          "26": {
+            "dep": "PETEN1W"
+          }
+        }
+      }
+    }
   },
   "LOWG": {
-    "sids": {}
+    "sids": {
+      "ABIRI": {
+        "cfl": 16000,
+        "rwys": {
+          "17": {
+            "dep": "ABIRI3G"
+          },
+          "35": {
+            "dep": "ABIRI4U"
+          }
+        }
+      },
+      "GBG": {
+        "cfl": 16000,
+        "rwys": {
+          "17": {
+            "dep": "GBG6X"
+          },
+          "35": {
+            "dep": "GBG4Y"
+          }
+        }
+      },
+      "GOLVA": {
+        "cfl": 12000,
+        "rwys": {
+          "17": {
+            "dep": "GOLVA4G"
+          },
+          "35": {
+            "dep": "GOLVA3U"
+          }
+        }
+      },
+      "GOTAR": {
+        "cfl": 12000,
+        "rwys": {
+          "17": {
+            "dep": "GOTAR4G"
+          },
+          "35": {
+            "dep": "GOTAR4U"
+          }
+        }
+      },
+      "GRZ": {
+        "cfl": 16000,
+        "rwys": {
+          "17": {
+            "dep": "GRZ2W"
+          },
+          "35": {
+            "dep": "GRZ3Y"
+          }
+        }
+      },
+      "MILGO": {
+        "cfl": 16000,
+        "rwys": {
+          "17": {
+            "dep": "MILGO5G"
+          },
+          "35": {
+            "dep": "MILGO4U"
+          }
+        }
+      },
+      "MUREG": {
+        "cfl": 16000,
+        "rwys": {
+          "17": {
+            "dep": "MUREG4G"
+          },
+          "35": {
+            "dep": "MUREG3U"
+          }
+        }
+      },
+      "RADLY": {
+        "cfl": 16000,
+        "rwys": {
+          "17": {
+            "dep": "RADLY3G"
+          },
+          "35": {
+            "dep": "RADLY5U"
+          }
+        }
+      },
+      "ROPAG": {
+        "cfl": 16000,
+        "rwys": {
+          "17": {
+            "dep": "ROPAG3G"
+          },
+          "35": {
+            "dep": "ROPAG3U"
+          }
+        }
+      }
+    }
   },
   "LOWK": {
-    "sids": {}
+    "sids": {
+      "ABIRI": {
+        "cfl": 16000,
+        "rwys": {
+          "10L": {
+            "dep": "ABIRI1L"
+          },
+          "28R": {
+            "dep": "ABIRI1R"
+          }
+        }
+      },
+      "BERTA": {
+        "cfl": 15000,
+        "rwys": {
+          "10L": {
+            "dep": "BERTA1L"
+          },
+          "28R": {
+            "dep": "BERTA1R"
+          }
+        }
+      },
+      "INGID": {
+        "cfl": 16000,
+        "rwys": {
+          "10L": {
+            "dep": "INGID2L"
+          },
+          "28R": {
+            "dep": "INGID2R"
+          }
+        }
+      },
+      "KFT": {
+        "cfl": 16000,
+        "rwys": {
+          "10L": {
+            "dep": "KFT1L"
+          },
+          "28R": {
+            "dep": "KFT2R"
+          }
+        }
+      },
+      "KLAGY": {
+        "cfl": 15000,
+        "rwys": {
+          "10L": {
+            "dep": "KLAGY1L"
+          },
+          "28R": {
+            "dep": "KLAGY1R"
+          }
+        }
+      },
+      "REKTI": {
+        "cfl": 15000,
+        "rwys": {
+          "10L": {
+            "dep": "REKTI1L"
+          },
+          "28R": {
+            "dep": "REKTI1R"
+          }
+        }
+      },
+      "VILAK": {
+        "cfl": 16000,
+        "rwys": {
+          "10L": {
+            "dep": "VILAK1L"
+          },
+          "28R": {
+            "dep": "VILAK1R"
+          }
+        }
+      }
+    }
   }
 }
