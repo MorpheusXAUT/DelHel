@@ -395,7 +395,11 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 	}
 
 	if (validateOnly) {
-		if (cad.GetClearedAltitude() != sid.cfl) {
+		// If CFL == RFL, EuroScope returns a CFL of 0. Additionally, CFL 1 and 2 indicate ILS and visual approach clearances respectively
+		// If the RFL is not adapted or confirmed by the controller, cad.GetFinalAltitude() will also return 0
+		// To ensure the CFL is actually set, we need to check all three values or check the actual CFL if > 0
+		if ((cad.GetClearedAltitude() == 0 && fp.GetFinalAltitude() != sid.cfl && cad.GetFinalAltitude() != sid.cfl) ||
+			(cad.GetClearedAltitude() > 0 && cad.GetClearedAltitude() != sid.cfl)) {
 			res.valid = false;
 			res.tag = "CFL";
 
