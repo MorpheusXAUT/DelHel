@@ -306,12 +306,18 @@
         "rwys": {
           "08": {
             "dep": "KPT5J"
+          },
+          "26": {
+            "dep": "MOGTI3H"
           }
         }
       },
       "MOGTI": {
         "cfl": 16000,
         "rwys": {
+          "08": {
+            "dep": "KPT5J"
+          },
           "26": {
             "dep": "MOGTI3H"
           }
