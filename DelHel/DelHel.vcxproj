@@ -107,7 +107,7 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </Midl>
     <ResourceCompile>
-      <Culture>0x0409</Culture>
+      <Culture>0x0009</Culture>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
@@ -165,7 +165,7 @@
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </Midl>
     <ResourceCompile>
-      <Culture>0x0409</Culture>
+      <Culture>0x0009</Culture>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
@@ -213,10 +213,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="DelHel.def" />
-    <CopyFileToFolders Include="airports.json">
+    <CopyFileToFolders Include="..\airports.json">
       <FileType>Document</FileType>
     </CopyFileToFolders>
+    <None Include="DelHel.def" />
     <None Include="res\DelHel.rc2" />
   </ItemGroup>
   <ItemGroup>

@@ -2,7 +2,7 @@
 
 `DelHel` helps VATSIM controllers by automating repetitive delivery duties in EuroScope.
 
-The plugin performs validation of flightplans, sets the appropriate SID (**s**tandard **i**nstrument **d**eparture) depending on runway config and changes the cleared flight level to the initial value of the respective SID. If available, NAPs (**n**oise **a**batement **p**rocedures) will be respected during SID assignment.
+The plugin performs validation of FPLs (**f**light **pl**ans), sets the appropriate SID (**s**tandard **i**nstrument **d**eparture) depending on runway config and changes the cleared flight level to the initial value of the respective SID. If available, NAPs (**n**oise **a**batement **p**rocedures) will be respected during SID assignment.
 
 ## Table of Contents
 
@@ -15,7 +15,6 @@ The plugin performs validation of flightplans, sets the appropriate SID (**s**ta
   - [Tag functions](#tag-functions)
   - [Chat commands](#chat-commands)
   - [Airport config](#airport-config)
-  - [Flightplan processing](#flightplan-processing)
 - [Contributing](#contributing)
   - [Development setup](#development-setup)
 - [License](#license)
@@ -39,27 +38,92 @@ Since `DelHel` was developed as an EuroScope plugin, it requires a working insta
 5. Close the plugin dialog and open the departure list columns setup dialog (small **S** at the left side of your departure list)
 ![Departure list columns setup dialog](https://i.imgur.com/MvFYkkh.png)
 6. (*Optional*) Add the **Flightplan Validation** column to your departure list by clicking **Add Item** and selecting the `DelHel / Flightplan Validation` **Tag Item type**. Pick a **Header name** and set a **Width** of 4 or greater. This column will display warnings and the status of each flightplan processed by DelHel, but is not strictly required for the plugin to function
-7. Assign the `DelHel / Process FPL` action as the **Left button** or **Right button** action of any of your tag items as desired. Triggering this function processes the selected flightplan using the default settings of `DelHel` (described in more detail in the [Default processing](#default-processing) section below)
-8. (*Optional*) Assign the `DelHel / Validation menu` action as the **Left button** or **Right button** action of any of your tag items as desired. Triggering this function opens the flightplan validation menu, allowing for more fine-grained processing of the selected flightplan (described in more detail in the [Selected processing](#selected-processing) section below)
+7. Assign the `DelHel / Process FPL` action as the **Left button** or **Right button** action of any of your tag items as desired. Triggering this function processes the selected flightplan using the default settings of `DelHel` (described in more detail in the [Process FPL](#process-fpl) section below)
+8. (*Optional*) Assign the `DelHel / Validation menu` action as the **Left button** or **Right button** action of any of your tag items as desired. Triggering this function opens the flightplan validation menu, allowing for more fine-grained processing of the selected flightplan (described in more detail in the [Validation Menu](#validation-menu) section below)
 9. Close the departure list settings by clicking **OK**
 
 ## Usage
 
 ### Basics
 
+By default, `DelHel` only performs some basic validations of flightplans, displaying warnings for potential issues found for each aircraft in your departure list via the [`Flightplan Validation`](#flightplan-validation) tag item. Additionally, flightplan processing and more detailed validations can be triggered manually using the [`Process FPL`](#process-fpl) tag functions.
+
+At the moment, `DelHel` supports the following validations and processing:
+- SID validation: ensures FPL has a valid SID fix for the destination airport and runway config as its first waypoint. Upon processing a flightplan, the calculated SID will be confirmed (added to the filed route in the FPL) so any changes to runway configs or different controller setups should have no effect.
+- NAP assignment: if available (and [enabled](#toggle-assignment-of-nap-sids)), noise abatement procedure SIDs will be assigned as appropriate based on runway config.
+- CFL (**c**leared **f**light **l**evel) validation: verifies correct CFL is set for selected SID. Processing a FPL automatically sets the correct CFL for the calculated SID.
+- RWY (**r**un**w**a**y**) validation: displays a warning if a runway assignment has been found in the flightplan as this might influence SID selection.
+- Flightplan cleanup: when processing a flightplan, some cleanup will be performed, removing any additional information the pilot might have included before the SID fix (e.g. a SID filed by the pilot), only leaving a valid speed/level group or a runway designation included. This prevents SID assignments filed by pilots from selecting an incorrect runway or procedure by accident.
+
+Flightplans can be processed manually using the [`Process FPL`](#process-fpl) [tag function](#tag-functions) or automatically by toggling the [automatic processing](#toggle-automatic-processing) setting on.
+
 ### Tag items
+
+Tag items are used to display information about flightplans in aircraft lists, such as the departure or arrival list.  
+At the moment, `DelHel` only adds one (optional) tag item to EuroScope:
 
 #### Flightplan Validation
 
+The `Flightplan Validation` tag item displays the result of the flightplan validation performed by `DelHel` for each aircraft. It contains any warnings or errors the plugin encounters while checking the FPL and is also the suggested column to interact with the `DelHel` [tag functions](#tag-functions).  
+To safe space, only one indication will be displayed at a time in the order they are encountered during processing, so you might see multiple warnings for a single flightplan while handling it.
+
+The following indications are available:
+
+##### `ADEP`
+
+Error, displayed in red.  
+The plugin did not find the departure airport of the aircraft in its [airport config](#airport-config) and thus cannot perform any validations or processing. This might indicate an incorrectly filed departure ICAO code or an airport currently not supported by `DelHel`.
+
+##### `CFL`
+
+Info, no/default color.  
+Indicates the current CFL set does not equal the initial CFL defined for the SID assigned. This most likely indicates the flightplan has not been processed yet or the aircraft was assigned a cleared flight level that deviates from the default.
+
+##### `RWY`
+
+Info, no/default color.  
+Indicates a runway designation (e.g. `LOWW/16`) has been found in the flightplan route. This is most likely the result of a manual runway assignment by a controller (via the TopSky plugin), but could also have been filed by a pilot, thus reminding you to ensure the correct RWY (and therefore SID) has been assigned.
+
+Error, displayed in red.  
+Indicates an error with the runway config, as no departure runway could be assigned by EuroScope. Ensure you have at least one departure runway set as active in your EuroScope runway dialog. Alternatively this could indicate an error in the FPL route as no suitable RWY could be found.
+
+##### `SID`
+
+Error, displayed in red.  
+Indicates no valid SID fix has been found in the flightplan, the pilot has either filed an invalid FPL route without a proper departure waypoint set or the route is malformed and no proper fix could be detected. Open the flightplan and check the route, adapting it manually if required, or ask the pilot to file a new flightplan with a proper route.
+
+##### `VFR`
+
+Info, no/default color.  
+Indicates pilot filed a VFR flightplan, so little to no validations can be performed. This just serves as an additional reminder about VFR flights.
+
 ### Tag functions
+
+Tag functions are used to trigger plugin functionality via a flightplan tag in aircraft lists, such as the departure or arrival list.  
+At the moment, `DelHel` adds several functions for processing FPLs which can be added as an action to any tag item desirable (although using them with the [`Flightplan Validation`](#flightplan-validation) tag item is recommended):
 
 #### Process FPL
 
+Processes the selected flightplan using the default global plugin settings, checking for a valid SID fix (as defined in the [airport config](#airport-config)) while cleaning up the route (removing everything filed before the SID fix aside from speed/level groups and runway designations).  
+Based on the SID fix and selected runway config, an appropriate SID (or NAP SID, if available/[enabled](#toggle-assignment-of-nap-sids)) will be picked from the airport config and the respective CFL assigned.  
+Since VFR flightplans contain no SID and often have just a very basic (if any) route available, the number of validations and automatic changes available is quite limited. At the moment of writing, `DelHel` will only assign a default altitude (standard traffic pattern altitude, airport elevation + 1000ft, rounded to the nearest 500ft) for a VFR flightplan and skip all other processing.  
+Note: using this function does **not** assign a squawk since TopSky does not expose its squawk logic and re-implementing the exact same assignment logic is outside the scope of this project.  
+This is the default action of `DelHel` as it allows the most flexible and comfortable processing of FPLs and is thus suggested as a left-click action for the [`Flightplan Validation`](#flightplan-validation) tag item.
+
 #### Process FPL (NAP)
+
+Processes the selected flightplan as described in [Process FPL](#process-fpl) above, however forces using noise abatement procedures (where available), even if the global NAP assignment has been toggled off.  
+This action is also available in the [`Validation Menu`](#validation-menu) tag function by default and allows for separate processing of selected flightplans without changing the global NAP setting.
 
 #### Process FPL (non-NAP)
 
+Processes the selected flightplan as described in [Process FPL](#process-fpl) above, however forces using "regular" (non-NAP) SIDs, even if the global NAP assignment has been toggled on.  
+This action is also available in the [`Validation Menu`](#validation-menu) tag function by default and allows for separate processing of selected flightplans without changing the global NAP setting.
+
 #### Validation Menu
+
+Opens a selection menu containing advanced options regarding flightplan validation, currently only the [`Process FPL (NAP)`](#process-fpl-nap) and [`Process FPL (non-NAP)`](#process-fpl-non-nap) functions. As more functionality is added, additional entries will be included in this menu.  
+This is the default secondary action of `DelHel` as it allows more fine-grained processing of FPLs and is thus suggested as the right-click action for the [`Flightplan Validation`](#flightplan-validation) tag item.
 
 ### Chat commands
 
@@ -71,7 +135,7 @@ Chat commands allow more fine-grained control of `DelHel`'s behavior and setting
 
 Toggles automatic processing of flightplans.
 
-Once enabled, `DelHel` will automatically process flightplans roughly every 5 seconds using the default processing settings as described in [Default processing](#default-processing) below. The plugin will only consider aircraft below a certain altitude threshold (current hard-coded to 5000ft) as already airborne pilots will most likely not receive a new clearance anyways.  
+Once enabled, `DelHel` will automatically process flightplans roughly every 5 seconds using the default processing settings as described in [Process FPL](#process-fpl) above. The plugin will only consider aircraft below a certain altitude threshold (current hard-coded to 5000ft) as already airborne pilots will most likely not receive a new clearance anyways.  
 **Attention**: use this setting with caution, there is currently no limit to active airports or regard taken for controllers "below" you - `DelHel` will process flightplans for all aircraft it can "see" and has a valid departure [airport config](#airport-config) for.
 
 This setting will always reset to its disabled state on every startup to avoid issues after connecting to a new session.
@@ -88,7 +152,7 @@ This setting will be saved to the EuroScope settings upon exit.
 
 `.delhel nap`
 
-Toggles automatic assignment of NAP SIDs for the [default processing](#default-processing) functionality.
+Toggles automatic assignment of NAP SIDs for the [default processing](#process-fpl) functionality.
 
 This setting will be saved to the EuroScope settings upon exit.
 
@@ -117,11 +181,31 @@ This setting will be saved to the EuroScope settings upon exit.
 
 ### Airport config
 
-### Flightplan processing
+`DelHel` uses its airport config, stored in the `airports.json` file in the same directory as the `DelHel.dll` plugin DLL, to retrieve most of its configuration for validations and flightplan processing.  
+This repository contains the default airport config for `DelHel`, although you might choose to adapt it to your vACC's needs and remove entries that are not relevant to you. Please keep in mind the same structure must still be provided as the plugin will fail to parse its config otherwise.
 
-#### Default processing
+The `airports.json` file is a [JSON](https://www.json.org/) file containing a top-level object with the departure airport's ICAO code in uppercase as keys and `Airport` objects as values.
 
-#### Selected processing
+#### `Airport` object
+
+Key       | Type     | Description                                                                                   | Required
+----------|----------|-----------------------------------------------------------------------------------------------|---------
+elevation | `int`    | Airport elevation in feet (ft)                                                                | Yes
+sids      | `object` | Object with SID fixes as keys and `SID` objects as values, contains SIDs available at airport | Yes
+
+#### `SID` object
+
+Key  | Type     | Description                                                                              | Required
+-----|----------|------------------------------------------------------------------------------------------|---------
+cfl  | `int`    | Initial CFL for SID in feet (ft)                                                         | Yes
+rwys | `object` | Object with RWYs as keys and `RWY` objects as values, contains RWYs SID is available for | Yes
+
+#### `RWY` object
+
+Key | Type     | Description                             | Required
+----|----------|-----------------------------------------|---------
+dep | `string` | Full name of SID for RWY                | Yes
+nap | `string` | Full name of NAP for RWY (if available) | No
 
 ## Contributing
 
