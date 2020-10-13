@@ -142,13 +142,28 @@ void CDelHel::OnGetTagItem(EuroScopePlugIn::CFlightPlan FlightPlan, EuroScopePlu
 	case TAG_ITEM_FP_VALIDATION:
 		validation res = this->ProcessFlightPlan(FlightPlan, this->assignNap, true);
 
-		strcpy_s(sItemString, 16, res.tag.c_str());
+		if (res.valid && std::find(this->processed.begin(), this->processed.end(), FlightPlan.GetCallsign()) != this->processed.end()) {
+			if (res.tag.empty()) {
+				strcpy_s(sItemString, 16, "OK");
+			}
+			else
+			{
+				strcpy_s(sItemString, 16, res.tag.c_str());
+			}
 
-		if (res.color != TAG_COLOR_NONE) {
 			*pColorCode = EuroScopePlugIn::TAG_COLOR_RGB_DEFINED;
-			*pRGB = res.color;
+			*pRGB = TAG_COLOR_GREEN;
 		}
+		else
+		{
+			strcpy_s(sItemString, 16, res.tag.c_str());
 
+			if (res.color != TAG_COLOR_NONE) {
+				*pColorCode = EuroScopePlugIn::TAG_COLOR_RGB_DEFINED;
+				*pRGB = res.color;
+			}
+		}
+		
 		break;
 	}
 }
@@ -351,6 +366,9 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 			}
 
 			this->LogDebugMessage("Skipping processing of VFR flightplan route", cs);
+
+			// Add to list of processed flightplans if not added by auto-processing already
+			this->IsFlightPlanProcessed(fp);
 		}
 
 		res.tag = "VFR";

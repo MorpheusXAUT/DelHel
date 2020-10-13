@@ -84,6 +84,9 @@ Indicates the current CFL set does not equal the initial CFL defined for the SID
 Info, no/default color.  
 Indicates a runway designation (e.g. `LOWW/16`) has been found in the flightplan route. This is most likely the result of a manual runway assignment by a controller (via the TopSky plugin), but could also have been filed by a pilot, thus reminding you to ensure the correct RWY (and therefore SID) has been assigned.
 
+Info, green color.  
+Indicates a runway designation (e.g. `LOWW/16`) has been found in the flightplan route of an already processed FPL. This is most likely the result of a manual runway assignment by a controller (via the TopSky plugin), but could also have been filed by a pilot, thus reminding you to ensure the correct RWY (and therefore SID) has been assigned.
+
 Error, displayed in red.  
 Indicates an error with the runway config, as no departure runway could be assigned by EuroScope. Ensure you have at least one departure runway set as active in your EuroScope runway dialog. Alternatively this could indicate an error in the FPL route as no suitable RWY could be found.
 
@@ -96,6 +99,14 @@ Indicates no valid SID fix has been found in the flightplan, the pilot has eithe
 
 Info, no/default color.  
 Indicates pilot filed a VFR flightplan, so little to no validations can be performed. This just serves as an additional reminder about VFR flights.
+
+Info, green color.  
+Indicates pilot filed a processed VFR flightplan, so little to no validations can be performed. This just serves as an additional reminder about VFR flights.
+
+##### `OK`
+
+Info, green color.  
+Indicates a flightplan has been processed and no validation errors or warnings have been found.
 
 ### Tag functions
 
