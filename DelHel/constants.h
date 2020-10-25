@@ -20,6 +20,7 @@ const int TAG_FUNC_PROCESS_FP_NON_NAP = 103;
 
 const COLORREF TAG_COLOR_NONE = 0;
 const COLORREF TAG_COLOR_RED = RGB(200, 0, 0);
+const COLORREF TAG_COLOR_ORANGE = RGB(255, 165, 0);
 const COLORREF TAG_COLOR_GREEN = RGB(0, 200, 0);
 
 const std::regex REGEX_SPEED_LEVEL_GROUP = std::regex("(((?:N|K)\\d{4})((?:F\\d{3})|(?:S\\d{4})|(?:A\\d{3})|(?:M\\d{4})|(?:VFR)))", std::regex_constants::ECMAScript);

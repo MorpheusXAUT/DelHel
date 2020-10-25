@@ -152,7 +152,13 @@ void CDelHel::OnGetTagItem(EuroScopePlugIn::CFlightPlan FlightPlan, EuroScopePlu
 			}
 
 			*pColorCode = EuroScopePlugIn::TAG_COLOR_RGB_DEFINED;
-			*pRGB = TAG_COLOR_GREEN;
+
+			if (res.color == TAG_COLOR_NONE) {
+				*pRGB = TAG_COLOR_GREEN;
+			}
+			else {
+				*pRGB = res.color;
+			}
 		}
 		else
 		{
@@ -413,8 +419,15 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 	}
 
 	if (validateOnly) {
-		// If CFL == RFL, EuroScope returns a CFL of 0. Additionally, CFL 1 and 2 indicate ILS and visual approach clearances respectively
-		// If the RFL is not adapted or confirmed by the controller, cad.GetFinalAltitude() will also return 0
+		if (fp.GetFinalAltitude() < sid.cfl) {
+			res.tag = "RFL";
+			res.color = TAG_COLOR_ORANGE;
+
+			return res;
+		}
+
+		// If CFL == RFL, EuroScope returns a CFL of 0. Additionally, CFL 1 and 2 indicate ILS and visual approach clearances respectively.
+		// If the RFL is not adapted or confirmed by the controller, cad.GetFinalAltitude() will also return 0.
 		// To ensure the CFL is actually set, we need to check all three values or check the actual CFL if > 0
 		if ((cad.GetClearedAltitude() == 0 && fp.GetFinalAltitude() != sid.cfl && cad.GetFinalAltitude() != sid.cfl) ||
 			(cad.GetClearedAltitude() > 0 && cad.GetClearedAltitude() != sid.cfl)) {
@@ -480,7 +493,17 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 			return res;
 		}
 
-		if (!cad.SetClearedAltitude(sid.cfl)) {
+		int cfl = sid.cfl;
+		if (fp.GetFinalAltitude() < sid.cfl) {
+			this->LogDebugMessage("Flightplan has RFL below initial CFL for SID, setting RFL", cs);
+
+			cfl = fp.GetFinalAltitude();
+
+			res.tag = "RFL";
+			res.color = TAG_COLOR_ORANGE;
+		}
+
+		if (!cad.SetClearedAltitude(cfl)) {
 			this->LogMessage("Failed to process flightplan, cannot set cleared flightlevel", cs);
 			return res;
 		}
