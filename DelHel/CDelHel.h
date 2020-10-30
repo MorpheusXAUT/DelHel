@@ -17,6 +17,7 @@
 #include "helpers.h"
 #include "airport.h"
 #include "validation.h"
+#include "flightplan.h"
 
 using json = nlohmann::json;
 using namespace std::chrono_literals;

@@ -204,6 +204,7 @@
   <ItemGroup>
     <ClCompile Include="CDelHel.cpp" />
     <ClCompile Include="DelHel.cpp" />
+    <ClCompile Include="flightplan.cpp" />
     <ClCompile Include="helpers.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -211,6 +212,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="route_entry.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\airports.json">
@@ -224,9 +226,11 @@
     <ClInclude Include="CDelHel.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="DelHel.h" />
+    <ClInclude Include="flightplan.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="route_entry.h" />
     <ClInclude Include="sid.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="helpers.h" />
