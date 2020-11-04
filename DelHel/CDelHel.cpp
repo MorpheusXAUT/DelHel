@@ -31,6 +31,7 @@ CDelHel::CDelHel() : EuroScopePlugIn::CPlugIn(
 	this->LoadSettings();
 
 	this->ReadAirportConfig();
+	this->ReadRoutingConfig();
 
 	if (this->updateCheck) {
 		this->latestVersion = std::async(FetchLatestVersion);
@@ -114,6 +115,7 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 
 			this->airports.clear();
 			this->ReadAirportConfig();
+			this->ReadRoutingConfig();
 
 			return true;
 		}
@@ -188,8 +190,8 @@ void CDelHel::OnFunctionCall(int FunctionId, const char* sItemString, POINT Pt, 
 		this->AddPopupListElement("Process FPL (non-NAP)", NULL, TAG_FUNC_PROCESS_FP_NON_NAP, false, EuroScopePlugIn::POPUP_ELEMENT_NO_CHECKBOX, false, false);
 		break;
 	case TAG_FUNC_PROCESS_FP:
-		this->ProcessFlightPlan(fp, this->assignNap);
-		break;
+this->ProcessFlightPlan(fp, this->assignNap);
+break;
 	case TAG_FUNC_PROCESS_FP_NAP:
 		this->ProcessFlightPlan(fp, true);
 		break;
@@ -247,6 +249,67 @@ void CDelHel::SaveSettings()
 
 	this->SaveDataToSettings(PLUGIN_NAME, "DelHel settings", ss.str().c_str());
 }
+
+
+void CDelHel::ReadRoutingConfig()
+{
+	json j;
+
+	try {
+		std::filesystem::path base2(GetPluginDirectory());
+		base2.append("routing.json");
+
+		std::ifstream ifs(base2.c_str());
+
+		j = json::parse(ifs);
+	}
+	catch (std::exception e)
+	{
+		this->LogMessage("Failed to read routing config. Error: " + std::string(e.what()), "Config");
+		return;
+	}
+
+	for (auto itair = this->airports.begin(); itair != this->airports.end(); itair++) {
+
+		for (auto& obj : j.items()) {		//iterator on outer json object -> key = departure icao
+			if (obj.key() == itair->second.icao) {	//if departure icao has already been read in by AirportConfig
+
+				try {
+					for (auto& el : obj.value()["entry"].items()) {	//iterator on routes items
+
+						for (auto& in_el : el.value()["routes"].items()) {
+
+							routing ro{
+								obj.key(),
+								in_el.value()["icao"],
+								in_el.value()["maxlvl"],
+								in_el.value()["minlvl"],
+								{}
+							};
+
+							ro.waypts.push_back(el.value()["name"]);	// add entry-point = SID exit as first waypoint of route
+
+							for (auto& inner_el : in_el.value()["waypoints"].items()) {	// add route waypoints
+								ro.waypts.push_back(inner_el.value());
+							}
+
+							itair->second.validroutes.push_back(ro);	//add routing to airports
+
+							std::string check = "ADEP:" + ro.adep + "-ADEST:" + ro.adest + "-MAX:" + std::to_string(ro.maxlvl) + "-MIN:" + std::to_string(ro.minlvl) + "-#wpts:" + std::to_string(ro.waypts.size());
+							this->LogDebugMessage("New Routing added: " + check, "Config");
+						}
+					}
+				}
+				catch (std::exception e) {
+					this->LogMessage("Failed to read routing config for " + itair->second.icao + "| Error: " + std::string(e.what()), "Config");
+					return;
+				}
+			}
+			this->LogMessage("Routing for airport " + itair->second.icao + " has been added.", "Config");
+		}		
+	}
+}
+
 
 void CDelHel::ReadAirportConfig()
 {
@@ -321,6 +384,7 @@ void CDelHel::ReadAirportConfig()
 		this->airports.emplace(icao, ap);
 	}
 }
+
 
 validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bool nap, bool validateOnly)
 {
@@ -514,7 +578,121 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 		this->IsFlightPlanProcessed(fp);
 	}
 
+
+	// Process Route
+	flightplan fpl = flightplan(fp.GetCallsign(), fp.GetExtractedRoute(), fpd.GetRoute()); // create fp for route validation
+
+	bool routecheck = false;
+	for (auto vait = ap.validroutes.begin(); vait != ap.validroutes.end(); ++vait) {
+		
+		routecheck = false;
+		auto selsidit = vait->waypts.begin();
+			
+			if(*selsidit == sid.wp){
+				try {
+					
+					auto wyprouit = vait->waypts.begin();
+						
+					if (wyprouit == vait->waypts.end()) {
+						this->LogDebugMessage("Error: Route was empty", cs);
+						continue; // if route is empty
+					}
+
+					for (auto wypfpl = fpl.route.begin(); wypfpl != fpl.route.end(); ++wypfpl) {
+						
+						if (wypfpl->name == *wyprouit) {
+
+							routecheck = true;
+							
+							if (wyprouit == vait->waypts.end()-1) {
+								break;
+							}
+							else {
+								++wyprouit;
+							}
+						}
+						else {
+							routecheck = false;
+						}
+					}
+					
+				}
+				catch (std::exception e) {
+					this->LogDebugMessage("Error, No Routing", cs);
+				}
+				
+				if (routecheck && vait->adest == arr) { //check specified destinations like LOWI, LOWS, etc.
+
+					if ((cad.GetFinalAltitude() == 0 && fpd.GetFinalAltitude() > vait->maxlvl * 100) || cad.GetFinalAltitude() > vait->maxlvl * 100) {
+
+						res.valid = false;
+						res.tag = "MAX";
+						res.color = TAG_COLOR_ORANGE;
+						return res;
+					}
+					if ((cad.GetFinalAltitude() == 0 && fpd.GetFinalAltitude() < vait->minlvl * 100) || (cad.GetFinalAltitude() != 0 && cad.GetFinalAltitude() < vait->minlvl * 100)) {
+
+						res.valid = false;
+						res.tag = "MIN";
+						res.color = TAG_COLOR_ORANGE;
+						return res;
+					}
+
+					//case all correct
+					res.valid = true;
+					res.tag = "";
+					res.color = TAG_COLOR_NONE;
+
+					return res;
+
+				} else if (routecheck && vait->adest != arr && vait->adest == ""){ // check for non specified destinations
+					if ((cad.GetFinalAltitude() == 0 && fpd.GetFinalAltitude() > vait->maxlvl * 100) || cad.GetFinalAltitude() > vait->maxlvl * 100) {
+
+						res.valid = false;
+						res.tag = "MAX";
+						res.color = TAG_COLOR_ORANGE;
+						break;
+					}
+					if ((cad.GetFinalAltitude() == 0 && fpd.GetFinalAltitude() < vait->minlvl * 100) || (cad.GetFinalAltitude() != 0 && cad.GetFinalAltitude() < vait->minlvl * 100)) {
+
+						res.valid = false;
+						res.tag = "MIN";
+						res.color = TAG_COLOR_ORANGE;
+						break;
+					}
+
+					//case all correct
+					res.valid = true;
+					res.tag = "";
+					res.color = TAG_COLOR_NONE;
+
+					return res;
+
+				} else if(this->CheckFlightPlanProcessed(fp)) {
+					res.valid = false;
+					res.tag = "INV";
+					res.color = TAG_COLOR_ORANGE;
+					continue;
+				}
+				else {
+					res.valid = false;
+					res.tag = "";
+					res.color = TAG_COLOR_NONE;
+					continue;
+				}
+		}
+	}
 	return res;
+}
+
+bool CDelHel::CheckFlightPlanProcessed(const EuroScopePlugIn::CFlightPlan& fp)
+{
+	std::string cs = fp.GetCallsign();
+
+	if (std::find(this->processed.begin(), this->processed.end(), cs) != this->processed.end()) {
+		return true;
+	}
+	return false;
 }
 
 bool CDelHel::IsFlightPlanProcessed(const EuroScopePlugIn::CFlightPlan& fp)
