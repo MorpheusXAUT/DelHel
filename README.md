@@ -54,6 +54,7 @@ At the moment, `DelHel` supports the following validations and processing:
 - CFL (**c**leared **f**light **l**evel) validation: verifies correct CFL is set for selected SID. Processing a FPL automatically sets the correct CFL for the calculated SID.
 - RWY (**r**un**w**a**y**) validation: displays a warning if a runway assignment has been found in the flightplan as this might influence SID selection.
 - Flightplan cleanup: when processing a flightplan, some cleanup will be performed, removing any additional information the pilot might have included before the SID fix (e.g. a SID filed by the pilot), only leaving a valid speed/level group or a runway designation included. This prevents SID assignments filed by pilots from selecting an incorrect runway or procedure by accident.
+- INV (**Inv**alid routing): verifies that the filed flightplan contains a valid routing according to the maintained routing.json file. Those routes can e.g. be the SAXFRA compulsory routings or special Vatsim Event routings. Each route contains at least an entry point (= last waypoint of the SID) and optional waypoints. If waypoints are maintained, the flightplan has to contain those waypoints in identical sequence in order to pass the routing validation. "DCT"/"DIRECT"/Speed-Altitude-Blocks in the FP are omitted.
 
 Flightplans can be processed manually using the [`Process FPL`](#process-fpl) [tag function](#tag-functions) or automatically by toggling the [automatic processing](#toggle-automatic-processing) setting on.
 
@@ -102,6 +103,25 @@ Indicates pilot filed a VFR flightplan, so little to no validations can be perfo
 
 Info, green color.  
 Indicates pilot filed a processed VFR flightplan, so little to no validations can be performed. This just serves as an additional reminder about VFR flights.
+
+##### `MIN`
+
+Caution, orange color.
+Indicates, that the Requested Flight Level RFL is below the minima for the filed route. 
+The altitudes are maintained in the routing.json and can be disregarded by the controller if necessary (e.g. depeding on active/inactive military areas along the route).
+
+##### `MAX`
+
+Caution, orange color.
+Indicates, that the Requested Flight Level RFL is above the maxima for the filed route. 
+The altitudes are maintained in the routing.json and can be disregarded by the controller if necessary (e.g. depeding on active/inactive military areas along the route).
+
+
+##### `INV`
+
+Caution, orange color.
+Indicates, that the filed route is not valid according to the maintained routings (routing.json). Those routings are e.g. the compulsory SAXRFRA routings for LOWW-departures or in case of a Vatsim Event.
+Indication becomes active as soon as the flightplan has been processed (SID is set and a valid SID exit point is in the FP).
 
 ##### `OK`
 
