@@ -49,7 +49,7 @@ Since `DelHel` was developed as an EuroScope plugin, it requires a working insta
 By default, `DelHel` only performs some basic validations of flightplans, displaying warnings for potential issues found for each aircraft in your departure list via the [`Flightplan Validation`](#flightplan-validation) tag item. Additionally, flightplan processing and more detailed validations can be triggered manually using the [`Process FPL`](#process-fpl) tag functions.
 
 At the moment, `DelHel` supports the following validations and processing:
-- SID validation: ensures FPL has a valid SID fix for the destination airport and runway config as its first waypoint. Upon processing a flightplan, the calculated SID will be confirmed (added to the filed route in the FPL) so any changes to runway configs or different controller setups should have no effect.
+- SID validation: ensures FPL has a valid SID fix for the departure airport and runway config as its first waypoint. Upon processing a flightplan, the calculated SID will be confirmed (added to the filed route in the FPL) so any changes to runway configs or different controller setups should have no effect.
 - NAP assignment: if available (and [enabled](#toggle-assignment-of-nap-sids)), noise abatement procedure SIDs will be assigned as appropriate based on runway config.
 - CFL (**c**leared **f**light **l**evel) validation: verifies correct CFL is set for selected SID. Processing a FPL automatically sets the correct CFL for the calculated SID.
 - RWY (**r**un**w**a**y**) validation: displays a warning if a runway assignment has been found in the flightplan as this might influence SID selection.
@@ -65,7 +65,7 @@ At the moment, `DelHel` only adds one (optional) tag item to EuroScope:
 #### Flightplan Validation
 
 The `Flightplan Validation` tag item displays the result of the flightplan validation performed by `DelHel` for each aircraft. It contains any warnings or errors the plugin encounters while checking the FPL and is also the suggested column to interact with the `DelHel` [tag functions](#tag-functions).  
-To safe space, only one indication will be displayed at a time in the order they are encountered during processing, so you might see multiple warnings for a single flightplan while handling it.
+To save space, only one indication will be displayed at a time in the order they are encountered during processing, so you might see multiple warnings for a single flightplan while handling it.
 
 The following indications are available:
 
