@@ -304,8 +304,9 @@ void CDelHel::ReadRoutingConfig()
 					this->LogMessage("Failed to read routing config for " + itair->second.icao + "| Error: " + std::string(e.what()), "Config");
 					return;
 				}
+			this->LogMessage("Routing for Departure Airport " + itair->second.icao + " has been added.", "Config");
 			}
-			this->LogMessage("Routing for airport " + itair->second.icao + " has been added.", "Config");
+			
 		}		
 	}
 }
@@ -579,48 +580,46 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 	}
 
 
-	// Process Route
-	flightplan fpl = flightplan(fp.GetCallsign(), fp.GetExtractedRoute(), fpd.GetRoute()); // create fp for route validation
+	if (ap.validroutes.size() != 0) {
 
-	bool routecheck = false;
-	for (auto vait = ap.validroutes.begin(); vait != ap.validroutes.end(); ++vait) {
-		
-		routecheck = false;
-		auto selsidit = vait->waypts.begin();
-			
-			if(*selsidit == sid.wp){
-				try {
-					
+		flightplan fpl = flightplan(fp.GetCallsign(), fp.GetExtractedRoute(), fpd.GetRoute()); // create fp for route validation
+
+		bool routecheck = false;
+		for (auto vait = ap.validroutes.begin(); vait != ap.validroutes.end(); ++vait) {
+
+			routecheck = false;
+			auto selsidit = vait->waypts.begin();
+
+			if (*selsidit == sid.wp) {
+				if (vait->waypts.size() > 1) {
+					try {
+
 					auto wyprouit = vait->waypts.begin();
-						
-					if (wyprouit == vait->waypts.end()) {
-						this->LogDebugMessage("Error: Route was empty", cs);
-						continue; // if route is empty
-					}
 
-					for (auto wypfpl = fpl.route.begin(); wypfpl != fpl.route.end(); ++wypfpl) {
-						
-						if (wypfpl->name == *wyprouit) {
+						for (auto wypfpl = fpl.route.begin(); wypfpl != fpl.route.end(); ++wypfpl) {
 
-							routecheck = true;
-							
-							if (wyprouit == vait->waypts.end()-1) {
-								break;
+							if (wypfpl->name == *wyprouit) {
+								routecheck = true;
+
+								if (wyprouit == vait->waypts.end() - 1) {
+									break;
+								}
+								else {
+									++wyprouit;
+								}
 							}
 							else {
-								++wyprouit;
+								routecheck = false;
 							}
 						}
-						else {
-							routecheck = false;
-						}
+
 					}
-					
+					catch (std::exception e) {
+						this->LogDebugMessage("Error, No Routing", cs);
+					}
+				}else {
+					routecheck = true;
 				}
-				catch (std::exception e) {
-					this->LogDebugMessage("Error, No Routing", cs);
-				}
-				
 				if (routecheck && vait->adest == arr) { //check specified destinations like LOWI, LOWS, etc.
 
 					if ((cad.GetFinalAltitude() == 0 && fpd.GetFinalAltitude() > vait->maxlvl * 100) || cad.GetFinalAltitude() > vait->maxlvl * 100) {
@@ -645,7 +644,8 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 
 					return res;
 
-				} else if (routecheck && vait->adest != arr && vait->adest == ""){ // check for non specified destinations
+				}
+				else if (routecheck && vait->adest != arr && vait->adest == "") { // check for non specified destinations
 					if ((cad.GetFinalAltitude() == 0 && fpd.GetFinalAltitude() > vait->maxlvl * 100) || cad.GetFinalAltitude() > vait->maxlvl * 100) {
 
 						res.valid = false;
@@ -668,7 +668,8 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 
 					return res;
 
-				} else if(this->CheckFlightPlanProcessed(fp)) {
+				}
+				else if (this->CheckFlightPlanProcessed(fp)) {
 					res.valid = false;
 					res.tag = "INV";
 					res.color = TAG_COLOR_ORANGE;
@@ -680,6 +681,7 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 					res.color = TAG_COLOR_NONE;
 					continue;
 				}
+			}
 		}
 	}
 	return res;
