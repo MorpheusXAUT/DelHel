@@ -18,6 +18,7 @@
 #include "airport.h"
 #include "validation.h"
 #include "flightplan.h"
+#include "sid.h"
 
 using json = nlohmann::json;
 using namespace std::chrono_literals;
@@ -45,9 +46,11 @@ private:
 
 	void LoadSettings();
 	void SaveSettings();
+	void ReadRoutingConfig();
 	void ReadAirportConfig();
 
 	validation ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bool nap, bool validateOnly = false);
+	bool CDelHel::CheckFlightPlanProcessed(const EuroScopePlugIn::CFlightPlan& fp);
 	bool IsFlightPlanProcessed(const EuroScopePlugIn::CFlightPlan& fp);
 	void AutoProcessFlightPlans();
 

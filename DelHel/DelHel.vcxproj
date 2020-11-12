@@ -218,6 +218,9 @@
     <CopyFileToFolders Include="..\airports.json">
       <FileType>Document</FileType>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="..\routing.json">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
     <None Include="DelHel.def" />
     <None Include="res\DelHel.rc2" />
   </ItemGroup>
@@ -231,6 +234,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="route_entry.h" />
+    <ClInclude Include="routing.h" />
     <ClInclude Include="sid.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="helpers.h" />

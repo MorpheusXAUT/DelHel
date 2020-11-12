@@ -6,11 +6,13 @@
 #include <regex>
 
 #include "sid.h"
+#include "routing.h"
 
 struct airport {
 	std::string icao;
 	int elevation;
 	std::map<std::string, sid> sids;
 	std::set<std::string> rwys;
+	std::vector<routing> validroutes;
 	std::regex rwy_regex;
 };

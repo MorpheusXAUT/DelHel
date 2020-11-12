@@ -460,7 +460,7 @@
     }
   },
   "LOWL": {
-    "elevation":  980,
+    "elevation": 980,
     "sids": {
       "LIDSI": {
         "cfl": 6000,

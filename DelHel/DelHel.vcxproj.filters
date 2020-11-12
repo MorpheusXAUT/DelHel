@@ -82,6 +82,9 @@
     <ClInclude Include="route_entry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="routing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DelHel.rc">
@@ -95,6 +98,9 @@
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\airports.json">
+      <Filter>Resource Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\routing.json">
       <Filter>Resource Files</Filter>
     </CopyFileToFolders>
   </ItemGroup>
