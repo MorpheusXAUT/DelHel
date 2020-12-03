@@ -27,6 +27,7 @@ CDelHel::CDelHel() : EuroScopePlugIn::CPlugIn(
 	this->updateCheck = false;
 	this->assignNap = false;
 	this->autoProcess = false;
+	this->warnRFLBelowCFL = false;
 
 	this->LoadSettings();
 
@@ -129,6 +130,18 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 
 			return true;
 		}
+		else if (args[1] == "rflblw") {
+			if (this->warnRFLBelowCFL) {
+				this->LogMessage("No longer displaying warnings for RFLs below inital CFLs for SIDs", "Config");
+			}
+			else {
+				this->LogMessage("Displaying warnings for RFLs below inital CFLs for SIDs", "Config");
+			}
+
+			this->warnRFLBelowCFL = !this->warnRFLBelowCFL;
+
+			return true;
+		}
 	}
 
 	return false;
@@ -221,7 +234,7 @@ void CDelHel::LoadSettings()
 	if (settings) {
 		std::vector<std::string> splitSettings = split(settings, SETTINGS_DELIMITER);
 
-		if (splitSettings.size() < 3) {
+		if (splitSettings.size() < 4) {
 			this->LogMessage("Invalid saved settings found, reverting to default.");
 
 			this->SaveSettings();
@@ -232,6 +245,7 @@ void CDelHel::LoadSettings()
 		std::istringstream(splitSettings[0]) >> this->debug;
 		std::istringstream(splitSettings[1]) >> this->updateCheck;
 		std::istringstream(splitSettings[2]) >> this->assignNap;
+		std::istringstream(splitSettings[3]) >> this->warnRFLBelowCFL;
 
 		this->LogDebugMessage("Successfully loaded settings.");
 	}
@@ -482,18 +496,25 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 	}
 
 	if (validateOnly) {
-		if (fp.GetFinalAltitude() < sid.cfl) {
+		if (this->warnRFLBelowCFL && fp.GetFinalAltitude() < sid.cfl) {
 			res.tag = "RFL";
 			res.color = TAG_COLOR_ORANGE;
 
 			return res;
 		}
 
-		// If CFL == RFL, EuroScope returns a CFL of 0. Additionally, CFL 1 and 2 indicate ILS and visual approach clearances respectively.
-		// If the RFL is not adapted or confirmed by the controller, cad.GetFinalAltitude() will also return 0.
-		// To ensure the CFL is actually set, we need to check all three values or check the actual CFL if > 0
-		if ((cad.GetClearedAltitude() == 0 && fp.GetFinalAltitude() != sid.cfl && cad.GetFinalAltitude() != sid.cfl) ||
-			(cad.GetClearedAltitude() > 0 && cad.GetClearedAltitude() != sid.cfl)) {
+		int cfl = cad.GetClearedAltitude();
+		// If CFL == RFL, EuroScope returns a CFL of 0 and the RFL value should be consulted. Additionally, CFL 1 and 2 indicate ILS and visual approach clearances respectively.
+		if (cfl < 3) {
+			// If the RFL is not adapted or confirmed by the controller, cad.GetFinalAltitude() will also return 0. As a last source of CFL info, we need to consider the filed RFL.
+			cfl = cad.GetFinalAltitude();
+			if (cfl < 3) {
+				cfl = fp.GetFinalAltitude();
+			}
+		}
+
+		// Display a warning if the CFL does not match the initial CFL assigned to the SID. No warning is shown if the RFL is below the CFL for the SID as pilots might request a lower initial climb.
+		if (cfl != sid.cfl && (cfl != fp.GetFinalAltitude() || fp.GetFinalAltitude() >= sid.cfl)) {
 			res.valid = false;
 			res.tag = "CFL";
 
@@ -561,9 +582,6 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 			this->LogDebugMessage("Flightplan has RFL below initial CFL for SID, setting RFL", cs);
 
 			cfl = fp.GetFinalAltitude();
-
-			res.tag = "RFL";
-			res.color = TAG_COLOR_ORANGE;
 		}
 
 		if (!cad.SetClearedAltitude(cfl)) {

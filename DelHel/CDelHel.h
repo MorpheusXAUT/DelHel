@@ -40,6 +40,7 @@ private:
 	bool updateCheck;
 	bool assignNap;
 	bool autoProcess;
+	bool warnRFLBelowCFL;
 	std::future<std::string> latestVersion;
 	std::map<std::string, airport> airports;
 	std::vector<std::string> processed;

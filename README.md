@@ -80,6 +80,12 @@ The plugin did not find the departure airport of the aircraft in its [airport co
 Info, no/default color.  
 Indicates the current CFL set does not equal the initial CFL defined for the SID assigned. This most likely indicates the flightplan has not been processed yet or the aircraft was assigned a cleared flight level that deviates from the default.
 
+##### `RFL`
+
+Caution, orange color.  
+Indicates the RFL filed in the FPL is below the initial CFL defined for the SID assigned. While this does not always indicate an error, caution is advised so minimum altitudes or other restrictions are not violated.  
+This warning is disabled by default and can be toggled using the [Toggle RFL below inital CFL](#toggle-rfl-below-initial-cfl-check) chat command.
+
 ##### `RWY`
 
 Info, no/default color.  
@@ -207,6 +213,17 @@ Resets the plugin state to its default values (respecting the saved settings fro
 Toggles the plugin update check upon EuroScope startup.
 
 If enabled, `DelHel` will check this repository for newer releases of the plugin, displaying a message should an update be available.
+
+This setting will be saved to the EuroScope settings upon exit.
+
+#### Toggle RFL below initial CFL check
+
+`.delhel rflblw`
+
+Toggles the flightplan check for RFLs below the initial CFL for SIDs.
+
+If enabled, `DelHel` will check the RFL of a flightplan and display a [caution](#rfl) if the filed final level is below the initial CFL for the SID assigned.  
+If disabled (default setting), `DelHel` will display no indication and silently assign the lower RFL as the CFL while processing.
 
 This setting will be saved to the EuroScope settings upon exit.
 
