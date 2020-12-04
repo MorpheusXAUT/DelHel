@@ -259,7 +259,8 @@ void CDelHel::SaveSettings()
 	std::ostringstream ss;
 	ss << this->debug << SETTINGS_DELIMITER
 		<< this->updateCheck << SETTINGS_DELIMITER
-		<< this->assignNap;
+		<< this->assignNap << SETTINGS_DELIMITER
+		<< this->warnRFLBelowCFL;
 
 	this->SaveDataToSettings(PLUGIN_NAME, "DelHel settings", ss.str().c_str());
 }
