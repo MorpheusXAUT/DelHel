@@ -28,6 +28,7 @@ CDelHel::CDelHel() : EuroScopePlugIn::CPlugIn(
 	this->assignNap = false;
 	this->autoProcess = false;
 	this->warnRFLBelowCFL = false;
+	this->logMinMaxRFL = false;
 
 	this->LoadSettings();
 
@@ -142,6 +143,18 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 
 			return true;
 		}
+		else if (args[1] == "minmaxrfl") {
+			if (this->logMinMaxRFL) {
+				this->LogMessage("No longer logging min and max RFLs for predefined routings", "Config");
+			}
+			else {
+				this->LogMessage("Logging min and max RFLs for predefined routings", "Config");
+			}
+
+			this->logMinMaxRFL = !this->logMinMaxRFL;
+
+			return true;
+		}
 	}
 
 	return false;
@@ -234,7 +247,7 @@ void CDelHel::LoadSettings()
 	if (settings) {
 		std::vector<std::string> splitSettings = split(settings, SETTINGS_DELIMITER);
 
-		if (splitSettings.size() < 4) {
+		if (splitSettings.size() < 5) {
 			this->LogMessage("Invalid saved settings found, reverting to default.");
 
 			this->SaveSettings();
@@ -246,6 +259,7 @@ void CDelHel::LoadSettings()
 		std::istringstream(splitSettings[1]) >> this->updateCheck;
 		std::istringstream(splitSettings[2]) >> this->assignNap;
 		std::istringstream(splitSettings[3]) >> this->warnRFLBelowCFL;
+		std::istringstream(splitSettings[4]) >> this->logMinMaxRFL;
 
 		this->LogDebugMessage("Successfully loaded settings.");
 	}
@@ -260,7 +274,8 @@ void CDelHel::SaveSettings()
 	ss << this->debug << SETTINGS_DELIMITER
 		<< this->updateCheck << SETTINGS_DELIMITER
 		<< this->assignNap << SETTINGS_DELIMITER
-		<< this->warnRFLBelowCFL;
+		<< this->warnRFLBelowCFL << SETTINGS_DELIMITER
+		<< this->logMinMaxRFL;
 
 	this->SaveDataToSettings(PLUGIN_NAME, "DelHel settings", ss.str().c_str());
 }
@@ -645,6 +660,19 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 						res.valid = false;
 						res.tag = "MAX";
 						res.color = TAG_COLOR_ORANGE;
+
+						if (!validateOnly) {
+							std::ostringstream msg;
+							msg << "Flights from " << dep << " to " << arr << " via " << sid.wp << " have a maximum FL of " << vait->maxlvl;
+
+							if (this->logMinMaxRFL) {
+								this->LogMessage(msg.str(), cs);
+							}
+							else {
+								this->LogDebugMessage(msg.str(), cs);
+							}
+						}
+
 						return res;
 					}
 					if ((cad.GetFinalAltitude() == 0 && fpd.GetFinalAltitude() < vait->minlvl * 100) || (cad.GetFinalAltitude() != 0 && cad.GetFinalAltitude() < vait->minlvl * 100)) {
@@ -652,6 +680,19 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 						res.valid = false;
 						res.tag = "MIN";
 						res.color = TAG_COLOR_ORANGE;
+
+						if (!validateOnly) {
+							std::ostringstream msg;
+							msg << "Flights from " << dep << " to " << arr << " via " << sid.wp << " have a minimum FL of " << vait->minlvl;
+
+							if (this->logMinMaxRFL) {
+								this->LogMessage(msg.str(), cs);
+							}
+							else {
+								this->LogDebugMessage(msg.str(), cs);
+							}
+						}
+
 						return res;
 					}
 
@@ -669,6 +710,19 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 						res.valid = false;
 						res.tag = "MAX";
 						res.color = TAG_COLOR_ORANGE;
+
+						if (!validateOnly) {
+							std::ostringstream msg;
+							msg << "Flights from " << dep << " via " << sid.wp << " have a maximum FL of " << vait->maxlvl;
+
+							if (this->logMinMaxRFL) {
+								this->LogMessage(msg.str(), cs);
+							}
+							else {
+								this->LogDebugMessage(msg.str(), cs);
+							}
+						}
+
 						break;
 					}
 					if ((cad.GetFinalAltitude() == 0 && fpd.GetFinalAltitude() < vait->minlvl * 100) || (cad.GetFinalAltitude() != 0 && cad.GetFinalAltitude() < vait->minlvl * 100)) {
@@ -676,6 +730,19 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 						res.valid = false;
 						res.tag = "MIN";
 						res.color = TAG_COLOR_ORANGE;
+
+						if (!validateOnly) {
+							std::ostringstream msg;
+							msg << "Flights from " << dep << " via " << sid.wp << " have a minimum FL of " << vait->minlvl;
+
+							if (this->logMinMaxRFL) {
+								this->LogMessage(msg.str(), cs);
+							}
+							else {
+								this->LogDebugMessage(msg.str(), cs);
+							}
+						}
+
 						break;
 					}
 

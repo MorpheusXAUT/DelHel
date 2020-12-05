@@ -227,6 +227,17 @@ If disabled (default setting), `DelHel` will display no indication and silently 
 
 This setting will be saved to the EuroScope settings upon exit.
 
+#### Toggle logging of min and max RFLs
+
+`.delhel minmaxrfl`
+
+Toggles logging of min and max RFLs for predefined routings during flightplan processing.
+
+If enabled, `DelHel` will display the min/max value triggering a warning during flightplan processing, informing you about the limit defined in the routing config.  
+If disabled (default setting), `DelHel` will only display the min/max RFL values if the [debug mode](#toggle-debug-logging) is enabled.
+
+This setting will be saved to the EuroScope settings upon exit.
+
 ### Airport config
 
 `DelHel` uses its airport config, stored in the `airports.json` file in the same directory as the `DelHel.dll` plugin DLL, to retrieve most of its configuration for validations and flightplan processing.  

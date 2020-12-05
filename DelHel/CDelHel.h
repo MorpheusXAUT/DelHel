@@ -41,6 +41,7 @@ private:
 	bool assignNap;
 	bool autoProcess;
 	bool warnRFLBelowCFL;
+	bool logMinMaxRFL;
 	std::future<std::string> latestVersion;
 	std::map<std::string, airport> airports;
 	std::vector<std::string> processed;
