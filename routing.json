@@ -195,6 +195,12 @@
         "name": "KOXER",
         "routes": [
           {
+            "icao": "LZIB",
+            "maxlvl": 75,
+            "minlvl": 27,
+            "waypoints": []
+          },
+          {
             "icao": "",
             "maxlvl": 999,
             "minlvl": 100,
