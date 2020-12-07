@@ -4,51 +4,64 @@
       {
         "name": "SOVIL",
         "routes": [
+		
+		  {
+            "icao": "LOWL",
+            "maxlvl": 165,
+            "minlvl": 60,
+            "waypoints": [ "SITNI" ]
+          },
           {
             "icao": "LOWS",
-            "maxlvl": 160,
-            "minlvl": 100,
+            "maxlvl": 165,
+            "minlvl": 60,
             "waypoints": [ "SITNI", "BAGSI", "MATIG" ]
+          },
+		  {
+            "icao": "LOWI",
+            "maxlvl": 225,
+            "minlvl": 100,
+            "waypoints": [ "SITNI", "BAGSI", "MATIG", "SBG" ]
           },
           {
             "icao": "LOWI",
-            "maxlvl": 245,
+            "maxlvl": 305,
             "minlvl": 100,
             "waypoints": [ "SITNI", "BAGSI", "MATIG", "NANIT" ]
           },
           {
             "icao": "LOWI",
-            "maxlvl": 999,
-            "minlvl": 245,
+            "maxlvl": 305,
+            "minlvl": 110,
             "waypoints": [ "SITNI", "BAGSI", "NANIT" ]
           },
           {
             "icao": "EDDM",
-            "maxlvl": 300,
-            "minlvl": 100,
+            "maxlvl": 305,
+            "minlvl": 60,
             "waypoints": [ "SITNI", "BAGSI", "MATIG", "AMADI" ]
           },
           {
             "icao": "",
-            "maxlvl": 999,
-            "minlvl": 100,
+            "maxlvl": 660,
+            "minlvl": 60,
             "waypoints": [ "SITNI", "BAGSI", "MATIG", "AMADI" ]
           },
           {
             "icao": "",
-            "maxlvl": 999,
+            "maxlvl": 660,
             "minlvl": 100,
             "waypoints": [ "SITNI", "BAGSI", "MATIG", "TITIG" ]
           },
           {
             "icao": "",
-            "maxlvl": 999,
+            "maxlvl": 660,
             "minlvl": 100,
             "waypoints": [ "SITNI", "BAGSI", "MATIG", "TRAUN" ]
           },
           {
             "icao": "",
-            "maxlvl": 999,
+            "maxlvl": 660,
             "minlvl": 100,
             "waypoints": [ "SITNI", "BAGSI", "NANIT" ]
           }
@@ -58,21 +71,21 @@
         "name": "RUPET",
         "routes": [
           {
-            "icao": "LOWK",
-            "maxlvl": 160,
-            "minlvl": 100,
-            "waypoints": [ "ABIRI" ]
-          },
-          {
             "icao": "LOWG",
-            "maxlvl": 160,
-            "minlvl": 100,
+            "maxlvl": 145,
+            "minlvl": 80,
             "waypoints": []
           },
-          {
+		  {
+            "icao": "LOWK",
+            "maxlvl": 160,
+            "minlvl": 95,
+            "waypoints": [ "ABIRI" ]
+          },
+                    {
             "icao": "",
-            "maxlvl": 999,
-            "minlvl": 100,
+            "maxlvl": 660,
+            "minlvl": 135,
             "waypoints": [ "GRZ" ]
           }
         ]
@@ -82,26 +95,26 @@
         "routes": [
           {
             "icao": "EDDS",
-            "maxlvl": 300,
-            "minlvl": 100,
+            "maxlvl": 345,
+            "minlvl": 60,
             "waypoints": [ "SUBEN" ]
           },
           {
             "icao": "EDDS",
-            "maxlvl": 300,
-            "minlvl": 100,
+            "maxlvl": 345,
+            "minlvl": 60,
             "waypoints": [ "KIRDI" ]
           },
           {
             "icao": "",
-            "maxlvl": 999,
-            "minlvl": 100,
+            "maxlvl": 660,
+            "minlvl": 60,
             "waypoints": [ "KIRDI" ]
           },
           {
             "icao": "",
-            "maxlvl": 999,
-            "minlvl": 100,
+            "maxlvl": 660,
+            "minlvl": 60,
             "waypoints": [ "SUBEN" ]
           }
         ]
@@ -111,32 +124,32 @@
         "routes": [
           {
             "icao": "LOWI",
-            "maxlvl": 999,
-            "minlvl": 245,
+            "maxlvl": 305,
+            "minlvl": 145,
             "waypoints": [ "ABRUK", "SETAL", "NANIT" ]
           },
           {
             "icao": "",
-            "maxlvl": 999,
-            "minlvl": 245,
+            "maxlvl": 660,
+            "minlvl": 145,
             "waypoints": [ "ABRUK", "SETAL", "ERKIR" ]
           },
           {
             "icao": "",
-            "maxlvl": 999,
-            "minlvl": 245,
+            "maxlvl": 660,
+            "minlvl": 145,
             "waypoints": [ "ABRUK", "SETAL", "UMVEG" ]
           },
           {
             "icao": "",
-            "maxlvl": 999,
-            "minlvl": 245,
+            "maxlvl": 660,
+            "minlvl": 145,
             "waypoints": [ "ABRUK", "SETAL", "DETSA" ]
           },
           {
             "icao": "",
-            "maxlvl": 999,
-            "minlvl": 245,
+            "maxlvl": 660,
+            "minlvl": 145,
             "waypoints": [ "ABRUK", "SETAL", "URAVA" ]
           }
         ]
@@ -146,14 +159,14 @@
         "routes": [
           {
             "icao": "",
-            "maxlvl": 999,
-            "minlvl": 100,
+            "maxlvl": 660,
+            "minlvl": 60,
             "waypoints": [ "RENKA" ]
           },
           {
             "icao": "",
-            "maxlvl": 999,
-            "minlvl": 100,
+            "maxlvl": 660,
+            "minlvl": 60,
             "waypoints": [ "LAMSI" ]
           }
         ]
@@ -163,7 +176,7 @@
         "routes": [
           {
             "icao": "",
-            "maxlvl": 999,
+            "maxlvl": 660,
             "minlvl": 100,
             "waypoints": [ "DITIS" ]
           }
@@ -174,8 +187,8 @@
         "routes": [
           {
             "icao": "",
-            "maxlvl": 999,
-            "minlvl": 100,
+            "maxlvl": 660,
+            "minlvl": 95,
             "waypoints": []
           }
         ]
@@ -184,9 +197,15 @@
         "name": "LEDVA",
         "routes": [
           {
+            "icao": "LKTB",
+            "maxlvl": 125,
+            "minlvl": 95,
+            "waypoints": []
+          },
+		  {
             "icao": "",
-            "maxlvl": 999,
-            "minlvl": 100,
+            "maxlvl": 660,
+            "minlvl": 95,
             "waypoints": []
           }
         ]
@@ -197,12 +216,12 @@
           {
             "icao": "LZIB",
             "maxlvl": 75,
-            "minlvl": 27,
+            "minlvl": 50,
             "waypoints": []
           },
-          {
+		  {
             "icao": "",
-            "maxlvl": 999,
+            "maxlvl": 660,
             "minlvl": 100,
             "waypoints": []
           }
@@ -213,8 +232,8 @@
         "routes": [
           {
             "icao": "",
-            "maxlvl": 999,
-            "minlvl": 100,
+            "maxlvl": 660,
+            "minlvl": 50,
             "waypoints": []
           }
         ]
@@ -224,8 +243,8 @@
         "routes": [
           {
             "icao": "",
-            "maxlvl": 999,
-            "minlvl": 100,
+            "maxlvl": 660,
+            "minlvl": 95,
             "waypoints": []
           }
         ]
@@ -235,8 +254,8 @@
         "routes": [
           {
             "icao": "",
-            "maxlvl": 999,
-            "minlvl": 100,
+            "maxlvl": 660,
+            "minlvl": 95,
             "waypoints": []
           }
         ]
@@ -246,12 +265,635 @@
         "routes": [
           {
             "icao": "",
-            "maxlvl": 999,
+            "maxlvl": 95,
+            "minlvl": 100,
+            "waypoints": [ "J21" ]
+          },
+		  {
+            "icao": "",
+            "maxlvl": 95,
+            "minlvl": 100,
+            "waypoints": [ "J23" ]
+          },
+		  {
+            "icao": "",
+            "maxlvl": 660,
             "minlvl": 100,
             "waypoints": []
           }
         ]
       }
     ]
+  },
+  "LOWI": {
+    "entry": [
+      {
+        "name": "UNKEN",
+        "routes": [
+		
+		  {
+            "icao": "LOWW",
+            "maxlvl": 295,
+            "minlvl": 100,
+            "waypoints": []
+          },
+		  {
+            "icao": "LOWS",
+            "maxlvl": 125,
+            "minlvl": 100,
+            "waypoints": []
+          },
+		  {
+            "icao": "LOWL",
+            "maxlvl": 165,
+            "minlvl": 100,
+            "waypoints": []
+          },
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 100,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "RTT",
+        "routes": [
+		
+		  {
+            "icao": "LOWW",
+            "maxlvl": 295,
+            "minlvl": 100,
+            "waypoints": [ "NEMAL" ]
+          },
+		  {
+            "icao": "LOWS",
+            "maxlvl": 125,
+            "minlvl": 100,
+            "waypoints": []
+          },
+		  {
+            "icao": "LOWL",
+            "maxlvl": 165,
+            "minlvl": 100,
+            "waypoints": []
+          },
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 100,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "OBEDI",
+        "routes": [
+		
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 145,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "KOGOL",
+        "routes": [
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 100,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "BRENO",
+        "routes": [
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 160,
+            "waypoints": []
+          }
+        ]
+		},
+		{
+        "name": "ADILO",
+        "routes": [
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 165,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "KPT",
+        "routes": [
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 165,
+            "waypoints": []
+          }
+        ]
+      }
+	]
+  },
+  "LOWG": {
+    "entry": [
+      {
+        "name": "MILGO",
+        "routes": [
+		
+		  {
+            "icao": "EDDM",
+            "maxlvl": 305,
+            "minlvl": 110,
+            "waypoints": [ "MILGO", "VATET", "REDBU"]
+          },
+		  {
+            "icao": "LOWL",
+            "maxlvl": 165,
+            "minlvl": 110,
+            "waypoints": [ "MILGO", "LIMRA" ]
+          },
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 110,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "ROPAG",
+        "routes": [
+		
+		  {
+            "icao": "LOWW",
+            "maxlvl": 145,
+            "minlvl": 70,
+            "waypoints": [ "NIGSI" ]
+          },
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 70,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "GOTAR",
+        "routes": [
+		
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 70,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "GBG",
+        "routes": [
+		
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 50,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "MUREG",
+        "routes": [
+		
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 125,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "GOLVA",
+        "routes": [
+		
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 125,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "RADLY",
+        "routes": [
+		
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 85,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "ABIRI",
+        "routes": [
+		
+		  {
+            "icao": "LOWK",
+            "maxlvl": 125,
+            "minlvl": 90,
+            "waypoints": []
+          },
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 90,
+            "waypoints": []
+          }
+        ]
+      }
+	]
+  },
+  "LOWK": {
+    "entry": [
+      {
+        "name": "INGID",
+        "routes": [
+				  
+		  {
+            "icao": "EDDM",
+            "maxlvl": 245,
+            "minlvl": 60,
+            "waypoints": [ "RASTA", "REDBU" ]
+          },
+		  {
+            "icao": "LOWL",
+            "maxlvl": 165,
+            "minlvl": 60,
+            "waypoints": []
+          },
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "ABIRI",
+        "routes": [
+		
+		  {
+            "icao": "LOWW",
+            "maxlvl": 165,
+            "minlvl": 60,
+            "waypoints": [ "NIGSI" ]
+          },
+		  {
+            "icao": "LOWL",
+            "maxlvl": 165,
+            "minlvl": 60,
+            "waypoints": []
+          },
+		  {
+            "icao": "LOWG",
+            "maxlvl": 125,
+            "minlvl": 60,
+            "waypoints": []
+          },
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "KLAGY",
+        "routes": [
+		
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "BERTA",
+        "routes": [
+		
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "REKTI",
+        "routes": [
+		
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "VILAK",
+        "routes": [
+		
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "KFT",
+        "routes": [
+		
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      }
+	]
+  },
+  "LOWL": {
+    "entry": [
+      {
+        "name": "PETEN",
+        "routes": [
+		
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "PEROL",
+        "routes": [
+		
+		  {
+            "icao": "LOWW",
+            "maxlvl": 165,
+            "minlvl": 60,
+            "waypoints": []
+          },
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "LIMRA",
+        "routes": [
+		
+		  {
+            "icao": "LOWG",
+            "maxlvl": 165,
+            "minlvl": 60,
+            "waypoints": [ "LEOBE" ]
+          },
+		 {
+            "icao": "LOWK",
+            "maxlvl": 165,
+            "minlvl": 60,
+            "waypoints": []
+          },
+		 {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "LIDSI",
+        "routes": [
+		
+		  {
+            "icao": "LOWI",
+            "maxlvl": 165,
+            "minlvl": 60,
+            "waypoints": []
+          },
+		  {
+            "icao": "LOWS",
+            "maxlvl": 125,
+            "minlvl": 60,
+            "waypoints": [ "MATIG" ]
+          },
+		  {
+            "icao": "EDDM",
+            "maxlvl": 125,
+            "minlvl": 60,
+            "waypoints": [ "MATIG", "AMADI" ]
+          },
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "LNZ",
+        "routes": [
+		
+		  {
+            "icao": "",
+            "maxlvl": 95,
+            "minlvl": 60,
+            "waypoints": [ "J21"]
+          },
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      }
+	  
+	]
+  },
+  "LOWS": {
+    "entry": [
+      {
+        "name": "INROM",
+        "routes": [
+		
+		  {
+            "icao": "LOWW",
+            "maxlvl": 165,
+            "minlvl": 60,
+            "waypoints": [ "MASUR" ]
+          },
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "NEMAL",
+        "routes": [
+		
+		  {
+            "icao": "LOWW",
+            "maxlvl": 165,
+            "minlvl": 80,
+            "waypoints": [ "MASUR" ]
+          },
+		  {
+            "icao": "LOWL",
+            "maxlvl": 125,
+            "minlvl": 80,
+            "waypoints": []
+          },
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 80,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "VERDA",
+        "routes": [
+		
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "DETSA",
+        "routes": [
+		
+		  {
+            "icao": "",
+            "maxlvl": 145,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "RTT",
+        "routes": [
+		
+		  {
+            "icao": "",
+            "maxlvl": 125,
+            "minlvl": 100,
+            "waypoints": []
+          },
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 100,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "TRAUN",
+        "routes": [
+		
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "TITG",
+        "routes": [
+		
+		  {
+            "icao": "EDDM",
+            "maxlvl": 125,
+            "minlvl": 60,
+            "waypoints": []
+          },
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      },
+	  {
+        "name": "SBG",
+        "routes": [
+		
+		  {
+            "icao": "LOWL",
+            "maxlvl": 125,
+            "minlvl": 60,
+            "waypoints": []
+          },
+		  {
+            "icao": "",
+            "maxlvl": 95,
+            "minlvl": 60,
+            "waypoints": [ "J21" ]
+          },
+		  {
+            "icao": "",
+            "maxlvl": 660,
+            "minlvl": 60,
+            "waypoints": []
+          }
+        ]
+      }
+	]
   }
 }
