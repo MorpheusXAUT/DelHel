@@ -265,14 +265,14 @@
         "routes": [
           {
             "icao": "",
-            "maxlvl": 95,
-            "minlvl": 100,
+            "maxlvl": 100,
+            "minlvl": 95,
             "waypoints": [ "J21" ]
           },
 		  {
             "icao": "",
-            "maxlvl": 95,
-            "minlvl": 100,
+            "maxlvl": 100,
+            "minlvl": 95,
             "waypoints": [ "J23" ]
           },
 		  {
