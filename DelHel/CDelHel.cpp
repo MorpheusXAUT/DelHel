@@ -128,6 +128,7 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 			this->processed.clear();
 			this->airports.clear();
 			this->ReadAirportConfig();
+			this->ReadRoutingConfig();
 
 			return true;
 		}
@@ -141,6 +142,8 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 
 			this->warnRFLBelowCFL = !this->warnRFLBelowCFL;
 
+			this->SaveSettings();
+
 			return true;
 		}
 		else if (args[1] == "minmaxrfl") {
@@ -152,6 +155,8 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 			}
 
 			this->logMinMaxRFL = !this->logMinMaxRFL;
+
+			this->SaveSettings();
 
 			return true;
 		}
@@ -239,6 +244,11 @@ void CDelHel::OnTimer(int Counter)
 void CDelHel::OnFlightPlanDisconnect(EuroScopePlugIn::CFlightPlan FlightPlan)
 {
 	this->processed.erase(std::remove(this->processed.begin(), this->processed.end(), FlightPlan.GetCallsign()), this->processed.end());
+}
+
+void CDelHel::OnAirportRunwayActivityChanged()
+{
+	this->UpdateActiveAirports();
 }
 
 void CDelHel::LoadSettings()
@@ -360,7 +370,8 @@ void CDelHel::ReadAirportConfig()
 	for (auto& [icao, jap] : j.items()) {
 		airport ap{
 			icao, // icao
-			jap.value<int>("elevation", 0) // elevation
+			jap.value<int>("elevation", 0), // elevation
+			false, // active
 		};
 
 		json jss;
@@ -411,6 +422,24 @@ void CDelHel::ReadAirportConfig()
 		}
 
 		this->airports.emplace(icao, ap);
+	}
+
+	this->UpdateActiveAirports();
+}
+
+void CDelHel::UpdateActiveAirports()
+{
+	this->SelectActiveSectorfile();
+	for (auto sfe = this->SectorFileElementSelectFirst(EuroScopePlugIn::SECTOR_ELEMENT_AIRPORT); sfe.IsValid(); sfe = this->SectorFileElementSelectNext(sfe, EuroScopePlugIn::SECTOR_ELEMENT_AIRPORT)) {
+		std::string dep = sfe.GetName();
+		to_upper(dep);
+
+		auto ait = this->airports.find(dep);
+		if (ait == this->airports.end()) {
+			continue;
+		}
+
+		ait->second.active = sfe.IsElementActive(true, 0);
 	}
 }
 
@@ -810,8 +839,24 @@ void CDelHel::AutoProcessFlightPlans()
 			continue;
 		}
 
+		std::string dep = fp.GetFlightPlanData().GetOrigin();
+		to_upper(dep);
+
+		std::string arr = fp.GetFlightPlanData().GetDestination();
+		to_upper(arr);
+
 		// Skip auto-processing for aircraft without a valid flightplan (no departure/destination airport)
-		if (strcmp(fp.GetFlightPlanData().GetOrigin(), "") == 0 || strcmp(fp.GetFlightPlanData().GetDestination(), "") == 0) {
+		if (dep == "" || arr == "") {
+			continue;
+		}
+
+		auto ait = this->airports.find(dep);
+		// Skip auto-processing of departures not available in the airport config
+		if (ait == this->airports.end()) {
+			continue;
+		}
+		// Skip auto-processing of airports currently not set as active in EuroScope
+		if (!ait->second.active) {
 			continue;
 		}
 

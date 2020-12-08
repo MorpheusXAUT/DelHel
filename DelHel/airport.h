@@ -11,6 +11,7 @@
 struct airport {
 	std::string icao;
 	int elevation;
+	bool active;
 	std::map<std::string, sid> sids;
 	std::set<std::string> rwys;
 	std::vector<routing> validroutes;
