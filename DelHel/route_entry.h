@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 class route_entry
 {
@@ -18,5 +19,7 @@ public:
 	route_entry(std::string name);
 	route_entry(std::string name, double direction, double distance);
 	route_entry(std::string name, int rfl, int speed);
+
+	friend std::ostream& operator<<(std::ostream& os, const route_entry& re);
 };
 

@@ -213,6 +213,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="route_entry.cpp" />
+    <ClCompile Include="routing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\airports.json">

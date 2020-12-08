@@ -33,6 +33,9 @@
     <ClCompile Include="route_entry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="routing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DelHel.def">
