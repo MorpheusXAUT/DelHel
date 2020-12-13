@@ -704,5 +704,69 @@
         }
       }
     }
+  },
+  "LOAN": {
+    "elevation": 896,
+    "sids": {
+      "GESGI": {
+        "cfl": 3000,
+        "rwys": {
+          "09": {
+            "dep": "GESGI1A"
+          },
+          "27": {
+            "dep": "GESGI1A"
+          }
+        }
+      }
+    }
+  },
+  "LOAV": {
+    "elevation": 767,
+    "sids": {
+      "MOVOS": {
+        "cfl": 3000,
+        "rwys": {
+          "09": {
+            "dep": "MOVOS1A"
+          },
+          "27": {
+            "dep": "MOVOS1A"
+          }
+        }
+      }
+    }
+  },
+  "LOIJ": {
+    "elevation": 2198,
+    "sids": {
+      "ERKIR": {
+        "cfl": 9000,
+        "rwys": {
+          "13": {
+            "dep": "ERKIR1G"
+          },
+          "31": {
+            "dep": "ERKIR1G"
+          }
+        }
+      }
+    }
+  },
+  "LOWZ": {
+    "elevation": 2470,
+    "sids": {
+      "NANIT": {
+        "cfl": 10000,
+        "rwys": {
+          "08": {
+            "dep": "NANIT1G"
+          },
+          "26": {
+            "dep": "NANIT1G"
+          }
+        }
+      }
+    }
   }
 }
