@@ -28,7 +28,7 @@ CDelHel::CDelHel() : EuroScopePlugIn::CPlugIn(
 	this->assignNap = false;
 	this->autoProcess = false;
 	this->warnRFLBelowCFL = false;
-	this->logMinMaxRFL = false;
+	this->logMinMaxRFL = true;
 
 	this->LoadSettings();
 

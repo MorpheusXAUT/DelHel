@@ -233,8 +233,8 @@ This setting will be saved to the EuroScope settings upon exit.
 
 Toggles logging of min and max RFLs for predefined routings during flightplan processing.
 
-If enabled, `DelHel` will display the min/max value triggering a warning during flightplan processing, informing you about the limit defined in the routing config.  
-If disabled (default setting), `DelHel` will only display the min/max RFL values if the [debug mode](#toggle-debug-logging) is enabled.
+If enabled (default setting), `DelHel` will display the min/max value triggering a warning during flightplan processing, informing you about the limit defined in the routing config.  
+If disabled, `DelHel` will only display the min/max RFL values if the [debug mode](#toggle-debug-logging) is enabled.
 
 This setting will be saved to the EuroScope settings upon exit.
 
@@ -271,23 +271,23 @@ All mandatory routings are stored in the `routing.json`file in the same director
 
 Please make sure to follow the file structure, and checking the edited file with a [validator](https://jsonformatter.curiousconcept.com/).
 
-
 Root object contains the departure ICAO code in (4-letter) uppercase as key and a `entry` object as value.
-####`entry` object
-Key       | Type     | Description                                                                                   | Required
-----------|----------|-----------------------------------------------------------------------------------------------|---------
-name	  | `string` | Describes the route entry waypoint, which is equal to the last SID-waypoint					 | Yes
-routes	  | `array`	 | Storage for more specified routes, e.g. destinations, waypoints, etc.						 | Yes
 
-###`routes` array
+#### `entry` object
+Key    | Type     | Description                                                                 | Required
+-------|----------|-----------------------------------------------------------------------------|---------
+name   | `string` | Describes the route entry waypoint, which is equal to the last SID-waypoint | Yes
+routes | `array`  | Storage for more specified routes, e.g. destinations, waypoints, etc.       | Yes
+
+#### `routes` array
 The routes array is filled with route objects including the following data:
 
-Key       | Type     | Description                                                                                   | Required
-----------|----------|-----------------------------------------------------------------------------------------------|---------
-icao	  | `string` | Describes the route entry waypoint, which is equal to the last SID-waypoint					 | Yes
-maxlvl	  | `int`	 | Maximum allowed cruise altitude in flightlevel (= feet/100) for this route					 | Yes
-minlvl	  | `int`	 | Minimum allowed cruise altitude in flightlevel (= feet/100) for this route					 | Yes
-waypoints | `array`	 | Enter all succeeding waypoints after the SID as strings, optional, can left blank			 | No
+Key       | Type     | Description                                                                       | Required
+----------|----------|-----------------------------------------------------------------------------------|---------
+icao      | `string` | Describes the route entry waypoint, which is equal to the last SID-waypoint       | Yes
+maxlvl    | `int`    | Maximum allowed cruise altitude in flightlevel (= feet/100) for this route        | Yes
+minlvl    | `int`    | Minimum allowed cruise altitude in flightlevel (= feet/100) for this route        | Yes
+waypoints | `array`  | Enter all succeeding waypoints after the SID as strings, optional, can left blank | No
 
 ## Contributing
 
