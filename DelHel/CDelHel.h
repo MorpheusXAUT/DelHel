@@ -34,6 +34,7 @@ public:
 	void OnFunctionCall(int FunctionId, const char* sItemString, POINT Pt, RECT Area);
 	void OnTimer(int Counter);
 	void OnFlightPlanDisconnect(EuroScopePlugIn::CFlightPlan FlightPlan);
+	void OnAirportRunwayActivityChanged();
 
 private:
 	bool debug;
@@ -50,6 +51,7 @@ private:
 	void SaveSettings();
 	void ReadRoutingConfig();
 	void ReadAirportConfig();
+	void UpdateActiveAirports();
 
 	validation ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bool nap, bool validateOnly = false);
 	bool CDelHel::CheckFlightPlanProcessed(const EuroScopePlugIn::CFlightPlan& fp);
