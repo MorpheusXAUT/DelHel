@@ -268,17 +268,6 @@
   "LOWI": {
     "elevation": 1907,
     "sids": {
-      "ADILO": {
-        "cfl": 16000,
-        "rwys": {
-          "08": {
-            "dep": "ADILO2J"
-          },
-          "26": {
-            "dep": "ADILO3H"
-          }
-        }
-      },
       "BRENO": {
         "cfl": 12000,
         "rwys": {
