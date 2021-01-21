@@ -267,6 +267,12 @@
         "name": "LANUX",
         "routes": [
           {
+            "icao": "LKPR",
+            "maxlvl": 185,
+            "minlvl": 95,
+            "waypoints": []
+          },
+          {
             "icao": "",
             "maxlvl": 660,
             "minlvl": 95,
