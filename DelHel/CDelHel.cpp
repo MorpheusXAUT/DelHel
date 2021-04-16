@@ -646,6 +646,7 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 		flightplan fpl = flightplan(fp.GetCallsign(), fp.GetExtractedRoute(), fpd.GetRoute()); // create fp for route validation
 
 		bool routecheck = false;
+		int count = 0;
 		for (auto vait = ap.validroutes.begin(); vait != ap.validroutes.end(); ++vait) {
 
 			routecheck = false;
@@ -655,25 +656,33 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 				if (vait->waypts.size() > 1) {
 					try {
 
-						auto wyprouit = vait->waypts.begin();
+						
+						count = 0; //counter to disregard previous found waypoints in fpl
+						for (auto wyprouit = vait->waypts.begin(); wyprouit != vait->waypts.end(); ++wyprouit) {
+							for (auto wypfpl = fpl.route.begin() + count; wypfpl != fpl.route.end(); ++wypfpl) {
 
-						for (auto wypfpl = fpl.route.begin(); wypfpl != fpl.route.end(); ++wypfpl) {
-
-							if (wypfpl->name == *wyprouit) {
-								routecheck = true;
-
-								if (wyprouit == vait->waypts.end() - 1) {
+								this->LogDebugMessage("Looking for json-Wypt: " + *wyprouit + " comparing to fpl-Wypt: " + wypfpl->name, cs);
+								if (wypfpl->airway && wypfpl->name.rfind(*wyprouit) == 0) { // check if waypoint name is part of the airway (e.g. SID)
+									
+									routecheck = true;
+									++count;
+									break;
+								}
+								if (*wyprouit == wypfpl->name) {
+									routecheck = true;
+									++count;
 									break;
 								}
 								else {
-									++wyprouit;
+									routecheck = false;
 								}
+								++count;
 							}
-							else {
-								routecheck = false;
+							if (!routecheck) {
+								break;
 							}
-						}
 
+						}
 					}
 					catch (std::exception e) {
 						this->LogDebugMessage("Error, No Routing", cs);
@@ -787,6 +796,11 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 					res.valid = false;
 					res.tag = "INV";
 					res.color = TAG_COLOR_ORANGE;
+
+					if (!validateOnly) {
+						this->LogMessage("Some Waypoints may be incorrect. Check routing!", cs);
+					}
+
 					continue;
 				}
 				else {

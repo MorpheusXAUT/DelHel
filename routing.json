@@ -472,17 +472,6 @@
         ]
       },
       {
-        "name": "ADILO",
-        "routes": [
-          {
-            "icao": "",
-            "maxlvl": 660,
-            "minlvl": 165,
-            "waypoints": []
-          }
-        ]
-      },
-      {
         "name": "KPT",
         "routes": [
           {
