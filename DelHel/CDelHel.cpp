@@ -29,6 +29,7 @@ CDelHel::CDelHel() : EuroScopePlugIn::CPlugIn(
 	this->autoProcess = false;
 	this->warnRFLBelowCFL = false;
 	this->logMinMaxRFL = true;
+	this->flashOnMessage = true;
 
 	this->LoadSettings();
 
@@ -160,6 +161,20 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 
 			return true;
 		}
+		else if (args[1] == "flash") {
+		if (this->flashOnMessage) {
+			this->LogMessage("No longer flashing on DelHel message", "Config");
+		}
+		else {
+			this->LogMessage("Flashing on DelHel message", "Config");
+		}
+
+		this->flashOnMessage = !this->flashOnMessage;
+
+		this->SaveSettings();
+
+		return true;
+		}
 	}
 
 	return false;
@@ -257,7 +272,7 @@ void CDelHel::LoadSettings()
 	if (settings) {
 		std::vector<std::string> splitSettings = split(settings, SETTINGS_DELIMITER);
 
-		if (splitSettings.size() < 5) {
+		if (splitSettings.size() < 6) {
 			this->LogMessage("Invalid saved settings found, reverting to default.");
 
 			this->SaveSettings();
@@ -270,6 +285,7 @@ void CDelHel::LoadSettings()
 		std::istringstream(splitSettings[2]) >> this->assignNap;
 		std::istringstream(splitSettings[3]) >> this->warnRFLBelowCFL;
 		std::istringstream(splitSettings[4]) >> this->logMinMaxRFL;
+		std::istringstream(splitSettings[5]) >> this->flashOnMessage;
 
 		this->LogDebugMessage("Successfully loaded settings.");
 	}
@@ -285,7 +301,8 @@ void CDelHel::SaveSettings()
 		<< this->updateCheck << SETTINGS_DELIMITER
 		<< this->assignNap << SETTINGS_DELIMITER
 		<< this->warnRFLBelowCFL << SETTINGS_DELIMITER
-		<< this->logMinMaxRFL;
+		<< this->logMinMaxRFL << SETTINGS_DELIMITER
+		<< this->flashOnMessage;
 
 	this->SaveDataToSettings(PLUGIN_NAME, "DelHel settings", ss.str().c_str());
 }
@@ -885,7 +902,7 @@ void CDelHel::LogMessage(std::string message)
 
 void CDelHel::LogMessage(std::string message, std::string type)
 {
-	this->DisplayUserMessage(PLUGIN_NAME, type.c_str(), message.c_str(), true, true, true, true, false);
+	this->DisplayUserMessage(PLUGIN_NAME, type.c_str(), message.c_str(), true, true, true, this->flashOnMessage, false);
 }
 
 void CDelHel::LogDebugMessage(std::string message)
