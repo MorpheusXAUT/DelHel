@@ -797,10 +797,6 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 					res.tag = "INV";
 					res.color = TAG_COLOR_ORANGE;
 
-					if (!validateOnly) {
-						this->LogMessage("Some Waypoints may be incorrect. Check routing!", cs);
-					}
-
 					continue;
 				}
 				else {
