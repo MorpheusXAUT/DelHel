@@ -28,8 +28,9 @@ CDelHel::CDelHel() : EuroScopePlugIn::CPlugIn(
 	this->assignNap = false;
 	this->autoProcess = false;
 	this->warnRFLBelowCFL = false;
-	this->logMinMaxRFL = true;
-	this->flashOnMessage = true;
+	this->logMinMaxRFL = false;
+	this->checkMinMaxRFL = false;
+	this->flashOnMessage = false;
 
 	this->LoadSettings();
 
@@ -147,7 +148,7 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 
 			return true;
 		}
-		else if (args[1] == "minmaxrfl") {
+		else if (args[1] == "logminmaxrfl") {
 			if (this->logMinMaxRFL) {
 				this->LogMessage("No longer logging min and max RFLs for predefined routings", "Config");
 			}
@@ -161,19 +162,33 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 
 			return true;
 		}
+		else if (args[1] == "minmaxrfl") {
+			if (this->checkMinMaxRFL) {
+				this->LogMessage("No longer checking min and max RFLs for predefined routings", "Config");
+			}
+			else {
+				this->LogMessage("Checking min and max RFLs for predefined routings", "Config");
+			}
+
+			this->checkMinMaxRFL = !this->checkMinMaxRFL;
+
+			this->SaveSettings();
+
+			return true;
+		}
 		else if (args[1] == "flash") {
-		if (this->flashOnMessage) {
-			this->LogMessage("No longer flashing on DelHel message", "Config");
-		}
-		else {
-			this->LogMessage("Flashing on DelHel message", "Config");
-		}
+			if (this->flashOnMessage) {
+				this->LogMessage("No longer flashing on DelHel message", "Config");
+			}
+			else {
+				this->LogMessage("Flashing on DelHel message", "Config");
+			}
 
-		this->flashOnMessage = !this->flashOnMessage;
+			this->flashOnMessage = !this->flashOnMessage;
 
-		this->SaveSettings();
+			this->SaveSettings();
 
-		return true;
+			return true;
 		}
 	}
 
@@ -272,7 +287,7 @@ void CDelHel::LoadSettings()
 	if (settings) {
 		std::vector<std::string> splitSettings = split(settings, SETTINGS_DELIMITER);
 
-		if (splitSettings.size() < 6) {
+		if (splitSettings.size() < 7) {
 			this->LogMessage("Invalid saved settings found, reverting to default.");
 
 			this->SaveSettings();
@@ -285,7 +300,8 @@ void CDelHel::LoadSettings()
 		std::istringstream(splitSettings[2]) >> this->assignNap;
 		std::istringstream(splitSettings[3]) >> this->warnRFLBelowCFL;
 		std::istringstream(splitSettings[4]) >> this->logMinMaxRFL;
-		std::istringstream(splitSettings[5]) >> this->flashOnMessage;
+		std::istringstream(splitSettings[5]) >> this->checkMinMaxRFL;
+		std::istringstream(splitSettings[6]) >> this->flashOnMessage;
 
 		this->LogDebugMessage("Successfully loaded settings.");
 	}
@@ -302,6 +318,7 @@ void CDelHel::SaveSettings()
 		<< this->assignNap << SETTINGS_DELIMITER
 		<< this->warnRFLBelowCFL << SETTINGS_DELIMITER
 		<< this->logMinMaxRFL << SETTINGS_DELIMITER
+		<< this->checkMinMaxRFL << SETTINGS_DELIMITER
 		<< this->flashOnMessage;
 
 	this->SaveDataToSettings(PLUGIN_NAME, "DelHel settings", ss.str().c_str());
@@ -710,7 +727,7 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 				}
 				if (routecheck && vait->adest == arr) { //check specified destinations like LOWI, LOWS, etc.
 
-					if ((cad.GetFinalAltitude() == 0 && fpd.GetFinalAltitude() > vait->maxlvl * 100) || cad.GetFinalAltitude() > vait->maxlvl * 100) {
+					if (this->checkMinMaxRFL && ((cad.GetFinalAltitude() == 0 && fpd.GetFinalAltitude() > vait->maxlvl * 100) || cad.GetFinalAltitude() > vait->maxlvl * 100)) {
 
 						res.valid = false;
 						res.tag = "MAX";
@@ -730,7 +747,7 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 
 						return res;
 					}
-					if ((cad.GetFinalAltitude() == 0 && fpd.GetFinalAltitude() < vait->minlvl * 100) || (cad.GetFinalAltitude() != 0 && cad.GetFinalAltitude() < vait->minlvl * 100)) {
+					if (this->checkMinMaxRFL && ((cad.GetFinalAltitude() == 0 && fpd.GetFinalAltitude() < vait->minlvl * 100) || (cad.GetFinalAltitude() != 0 && cad.GetFinalAltitude() < vait->minlvl * 100))) {
 
 						res.valid = false;
 						res.tag = "MIN";
@@ -760,7 +777,7 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 
 				}
 				else if (routecheck && vait->adest != arr && vait->adest == "") { // check for non specified destinations
-					if ((cad.GetFinalAltitude() == 0 && fpd.GetFinalAltitude() > vait->maxlvl * 100) || cad.GetFinalAltitude() > vait->maxlvl * 100) {
+					if (this->checkMinMaxRFL && ((cad.GetFinalAltitude() == 0 && fpd.GetFinalAltitude() > vait->maxlvl * 100) || cad.GetFinalAltitude() > vait->maxlvl * 100)) {
 
 						res.valid = false;
 						res.tag = "MAX";
@@ -780,7 +797,7 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 
 						break;
 					}
-					if ((cad.GetFinalAltitude() == 0 && fpd.GetFinalAltitude() < vait->minlvl * 100) || (cad.GetFinalAltitude() != 0 && cad.GetFinalAltitude() < vait->minlvl * 100)) {
+					if (this->checkMinMaxRFL && ((cad.GetFinalAltitude() == 0 && fpd.GetFinalAltitude() < vait->minlvl * 100) || (cad.GetFinalAltitude() != 0 && cad.GetFinalAltitude() < vait->minlvl * 100))) {
 
 						res.valid = false;
 						res.tag = "MIN";

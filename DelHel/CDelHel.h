@@ -43,6 +43,7 @@ private:
 	bool autoProcess;
 	bool warnRFLBelowCFL;
 	bool logMinMaxRFL;
+	bool checkMinMaxRFL;
 	bool flashOnMessage;
 	std::future<std::string> latestVersion;
 	std::map<std::string, airport> airports;

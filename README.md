@@ -112,20 +112,20 @@ Indicates pilot filed a processed VFR flightplan, so little to no validations ca
 
 ##### `MIN`
 
-Caution, orange color.
-Indicates, that the Requested Flight Level RFL is below the minima for the filed route. 
+Caution, orange color.  
+Indicates, that the Requested Flight Level (RFL) is below the minima for the filed route. This warning will only be displayed if [checking of min and max RFLs](#toggle-checking-of-min-and-max-rfls) is enabled (default off).  
 The altitudes are maintained in the routing.json and can be disregarded by the controller if necessary (e.g. depeding on active/inactive military areas along the route).
 
 ##### `MAX`
 
-Caution, orange color.
-Indicates, that the Requested Flight Level RFL is above the maxima for the filed route. 
+Caution, orange color.  
+Indicates, that the Requested Flight Level (RFL) is above the maxima for the filed route. This warning will only be displayed if [checking of min and max RFLs](#toggle-checking-of-min-and-max-rfls) is enabled (default off).  
 The altitudes are maintained in the routing.json and can be disregarded by the controller if necessary (e.g. depeding on active/inactive military areas along the route).
 
 
 ##### `INV`
 
-Caution, orange color.
+Caution, orange color.  
 Indicates, that the filed route is not valid according to the maintained routings (routing.json). Those routings are e.g. the compulsory SAXRFRA routings for LOWW-departures or in case of a Vatsim Event.
 Indication becomes active as soon as the flightplan has been processed (SID is set and a valid SID exit point is in the FP).
 
@@ -229,12 +229,34 @@ This setting will be saved to the EuroScope settings upon exit.
 
 #### Toggle logging of min and max RFLs
 
-`.delhel minmaxrfl`
+`.delhel logminmaxrfl`
 
 Toggles logging of min and max RFLs for predefined routings during flightplan processing.
 
-If enabled (default setting), `DelHel` will display the min/max value triggering a warning during flightplan processing, informing you about the limit defined in the routing config.  
-If disabled, `DelHel` will only display the min/max RFL values if the [debug mode](#toggle-debug-logging) is enabled.
+If enabled, `DelHel` will display the min/max value triggering a warning during flightplan processing, informing you about the limit defined in the routing config.  
+If disabled (default setting), `DelHel` will only display the min/max RFL values if the [debug mode](#toggle-debug-logging) is enabled.
+
+This setting will be saved to the EuroScope settings upon exit.
+
+#### Toggle checking of min and max RFLs
+
+`.delhel minmaxrfl`
+
+Toggles checking of min and max RFLs for predefined routings during flightplan processing.
+
+If enabled, `DelHel` will verify the min/max value of a predefined route during flightplan processing, displaying a warning if the filed RFL is below or above the limit defined in the routing config.  
+If disabled (default setting), `DelHel` will not display the [`MIN`](#min)/[`MAX`](#max) warnings.
+
+This setting will be saved to the EuroScope settings upon exit.
+
+#### Toggle flashing of DelHel messages
+
+`.delhel flash`
+
+Toggles flashing of unread message indicator for messages in the DelHel group. Note that, once disabled, all `DelHel` messages will continue to flash until you have restarted EuroScope (saving your plugin settings). This unfortunately seems to be a EuroScope limitation we cannot work around.
+
+If enabled, messages sent to the `DelHel` group will have a flashing unread indiciator.  
+If disabled (default setting), unread messages will only light up once, solidly (only applies after EuroScope has been restarted).
 
 This setting will be saved to the EuroScope settings upon exit.
 
