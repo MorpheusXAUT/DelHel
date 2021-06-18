@@ -543,17 +543,23 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 
 	auto rit = route.begin();
 	while (rit != route.end()) {
-		if (std::regex_search(*rit, REGEX_SPEED_LEVEL_GROUP)) {
-			++rit;
-			continue;
-		}
-		else if (std::regex_search(*rit, ap.rwy_regex)) {
+		if (std::regex_search(*rit, ap.rwy_regex)) {
 			++rit;
 			res.tag = "RWY";
 			continue;
 		}
+		
+		std::map<std::string, ::sid>::iterator sit;
+		std::smatch m;
+		if (std::regex_search(*rit, m, REGEX_SPEED_LEVEL_GROUP)) {
+			// Try to match waypoint of speed/level group in case SID fix already has one assigned
+			sit = ap.sids.find(m[1]);
+		}
+		else {
+			// If no other matchers above yield a result, try to match full route part
+			sit = ap.sids.find(*rit);
+		}
 
-		auto sit = ap.sids.find(*rit);
 		if (sit != ap.sids.end()) {
 			sid = sit->second;
 			break;
