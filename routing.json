@@ -908,8 +908,8 @@
         "routes": [
           {
             "icao": "",
-            "maxlvl": 145,
-            "minlvl": 60,
+            "maxlvl": 660,
+            "minlvl": 145,
             "waypoints": []
           }
         ]
