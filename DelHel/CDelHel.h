@@ -55,7 +55,7 @@ private:
 	void ReadAirportConfig();
 	void UpdateActiveAirports();
 
-	validation ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bool nap, bool validateOnly = false);
+	validation ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap, bool validateOnly = false);
 	bool CDelHel::CheckFlightPlanProcessed(const EuroScopePlugIn::CFlightPlan& fp);
 	bool IsFlightPlanProcessed(const EuroScopePlugIn::CFlightPlan& fp);
 	void AutoProcessFlightPlans();

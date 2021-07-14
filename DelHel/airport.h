@@ -13,7 +13,7 @@ struct airport {
 	int elevation;
 	bool active;
 	std::map<std::string, sid> sids;
-	std::set<std::string> rwys;
+	std::map<std::string, bool> rwys;
 	std::vector<routing> validroutes;
 	std::regex rwy_regex;
 };

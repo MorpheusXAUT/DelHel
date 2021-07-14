@@ -53,7 +53,7 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 	if (starts_with(args[0], ".delhel")) {
 		if (args.size() == 1) {
 			std::ostringstream msg;
-			msg << "Version " << PLUGIN_VERSION << " loaded. Available commands: auto, debug, nap, reload, reset, update";
+			msg << "Version " << PLUGIN_VERSION << " loaded. Available commands: auto, debug, nap, reload, reset, update, rflblw, logminmaxrfl, minmaxrfl, flash";
 
 			this->LogMessage(msg.str());
 
@@ -434,25 +434,28 @@ void CDelHel::ReadAirportConfig()
 				continue;
 			}
 
-			for (auto& [rwy, jsi] : jrwys.items()) {
+			std::ostringstream rrs;
+			rrs << icao << "\\/(";
+			for (auto it = jrwys.items().begin(); it != jrwys.items().end(); ++it) {
 				sidinfo si{
-					rwy, // rwy
-					jsi.value<std::string>("dep", ""), // dep
-					jsi.value<std::string>("nap", "") // nap
+					it.key(), // rwy
+					it.value().value<std::string>("dep", ""), // dep
+					it.value().value<std::string>("nap", "") // nap
 				};
 
 				s.rwys.emplace(si.rwy, si);
-				ap.rwys.insert(si.rwy);
+				ap.rwys.emplace(si.rwy, false);
+
+				rrs << si.rwy;
+				if (std::next(it) != jrwys.items().end()) {
+					rrs << '|';
+				}
 			}
-
-			ap.sids.emplace(wp, s);
-
-			std::ostringstream rrs;
-			rrs << icao << "\\/(";
-			std::copy(ap.rwys.begin(), ap.rwys.end(), std::ostream_iterator<std::string>(rrs, "|"));
 			rrs << ')';
 
 			ap.rwy_regex = std::regex(rrs.str(), std::regex_constants::ECMAScript);
+
+			ap.sids.emplace(wp, s);
 		}
 
 		this->airports.emplace(icao, ap);
@@ -464,21 +467,39 @@ void CDelHel::ReadAirportConfig()
 void CDelHel::UpdateActiveAirports()
 {
 	this->SelectActiveSectorfile();
-	for (auto sfe = this->SectorFileElementSelectFirst(EuroScopePlugIn::SECTOR_ELEMENT_AIRPORT); sfe.IsValid(); sfe = this->SectorFileElementSelectNext(sfe, EuroScopePlugIn::SECTOR_ELEMENT_AIRPORT)) {
-		std::string dep = sfe.GetName();
-		to_upper(dep);
+	for (auto sfe = this->SectorFileElementSelectFirst(EuroScopePlugIn::SECTOR_ELEMENT_RUNWAY); sfe.IsValid(); sfe = this->SectorFileElementSelectNext(sfe, EuroScopePlugIn::SECTOR_ELEMENT_RUNWAY)) {
+		std::string ap = trim(sfe.GetAirportName());
+		to_upper(ap);
 
-		auto ait = this->airports.find(dep);
+		auto ait = this->airports.find(ap);
 		if (ait == this->airports.end()) {
 			continue;
 		}
 
-		ait->second.active = sfe.IsElementActive(true, 0);
+		std::string rwy = trim(sfe.GetRunwayName(0));
+		to_upper(rwy);
+
+		auto rit = ait->second.rwys.find(rwy);
+		if (rit != ait->second.rwys.end()) {
+			rit->second = sfe.IsElementActive(true, 0);
+		}
+
+		rwy = trim(sfe.GetRunwayName(1));
+		to_upper(rwy);
+
+		rit = ait->second.rwys.find(rwy);
+		if (rit != ait->second.rwys.end()) {
+			rit->second = sfe.IsElementActive(true, 1);
+		}
+
+		if (!ait->second.active) {
+			ait->second.active = sfe.IsElementActive(true, 0) || sfe.IsElementActive(true, 1);
+		}
 	}
 }
 
 
-validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bool nap, bool validateOnly)
+validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap, bool validateOnly)
 {
 	validation res{
 		true, // valid
@@ -617,18 +638,35 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 			return res;
 		}
 
+		std::map<std::string, sidinfo>::iterator sit;
 		std::string rwy = fpd.GetDepartureRwy();
 		if (rwy == "") {
-			this->LogMessage("Failed to process flightplan, no runway assigned", cs);
+			this->LogDebugMessage("No runway assigned, attempting to pick first active runway for SID", cs);
 
-			res.valid = false;
-			res.tag = "RWY";
-			res.color = TAG_COLOR_RED;
+			for (auto [r, active] : ap.rwys) {
+				if (active) {
+					sit = sid.rwys.find(r);
+					if (sit != sid.rwys.end()) {
+						rwy = r;
+						break;
+					}
+				}
+			}
 
-			return res;
+			if (rwy == "") {
+				this->LogMessage("Failed to process flightplan, no runway assigned", cs);
+
+				res.valid = false;
+				res.tag = "RWY";
+				res.color = TAG_COLOR_RED;
+
+				return res;
+			}
+		}
+		else {
+			sit = sid.rwys.find(rwy);
 		}
 
-		auto sit = sid.rwys.find(rwy);
 		if (sit == sid.rwys.end()) {
 			this->LogMessage("Invalid flightplan, no matching SID found for runway", cs);
 
@@ -701,7 +739,6 @@ validation CDelHel::ProcessFlightPlan(const EuroScopePlugIn::CFlightPlan& fp, bo
 						for (auto wyprouit = vait->waypts.begin(); wyprouit != vait->waypts.end(); ++wyprouit) {
 							for (auto wypfpl = fpl.route.begin() + count; wypfpl != fpl.route.end(); ++wypfpl) {
 
-								this->LogDebugMessage("Looking for json-Wypt: " + *wyprouit + " comparing to fpl-Wypt: " + wypfpl->name, cs);
 								if (wypfpl->airway && wypfpl->name.rfind(*wyprouit) == 0) { // check if waypoint name is part of the airway (e.g. SID)
 									
 									routecheck = true;

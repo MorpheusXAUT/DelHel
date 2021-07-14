@@ -98,3 +98,16 @@ inline int round_to_closest(int num, int closest)
 {
 	return ((num + closest / 2) / closest) * closest;
 }
+
+inline std::string trim(const std::string& str, const std::string& charset = " \t")
+{
+	size_t begin = str.find_first_not_of(charset);
+	if (begin == std::string::npos) {
+		// Empty string or only characters from charset provided
+		return "";
+	}
+
+	size_t end = str.find_last_not_of(charset);
+
+	return str.substr(begin, end - begin + 1);
+}
