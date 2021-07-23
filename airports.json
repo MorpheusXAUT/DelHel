@@ -335,10 +335,10 @@
         "cfl": 12000,
         "rwys": {
           "08": {
-            "dep": "RTT3J"
+            "dep": "RTT2Q"
           },
           "26": {
-            "dep": "RTT4H"
+            "dep": "RTT1R"
           }
         }
       },
