@@ -440,7 +440,8 @@ void CDelHel::ReadAirportConfig()
 				sidinfo si{
 					it.key(), // rwy
 					it.value().value<std::string>("dep", ""), // dep
-					it.value().value<std::string>("nap", "") // nap
+					it.value().value<std::string>("nap", ""), // nap
+					it.value().value<int>("prio", 0) // prio
 				};
 
 				s.rwys.emplace(si.rwy, si);
@@ -638,17 +639,21 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 			return res;
 		}
 
-		std::map<std::string, sidinfo>::iterator sit;
+		std::map<std::string, sidinfo>::iterator sit{};
 		std::string rwy = fpd.GetDepartureRwy();
 		if (rwy == "") {
 			this->LogDebugMessage("No runway assigned, attempting to pick first active runway for SID", cs);
 
+			// SIDs can have a priority assigned per runway, allowing for "hierarchy" depending on runway config (as currently possible in ES sectorfiles).
+			// If no priority is assigned, the default of 0 will be used and the first active runway will be picked.
+			int prio = -1;
 			for (auto [r, active] : ap.rwys) {
 				if (active) {
-					sit = sid.rwys.find(r);
-					if (sit != sid.rwys.end()) {
+					auto s = sid.rwys.find(r);
+					if (s != sid.rwys.end() && s->second.prio > prio) {
+						sit = s;
 						rwy = r;
-						break;
+						prio = sit->second.prio;
 					}
 				}
 			}
@@ -662,6 +667,10 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 
 				return res;
 			}
+
+			// TODO display warning once "valid" tag override below is fixed
+			/*res.tag = "SID";
+			res.color = TAG_COLOR_GREEN;*/
 		}
 		else {
 			sit = sid.rwys.find(rwy);

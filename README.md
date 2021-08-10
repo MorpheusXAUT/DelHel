@@ -283,10 +283,11 @@ rwys | `object` | Object with RWYs as keys and `RWY` objects as values, contains
 
 #### `RWY` object
 
-Key | Type     | Description                             | Required
-----|----------|-----------------------------------------|---------
-dep | `string` | Full name of SID for RWY                | Yes
-nap | `string` | Full name of NAP for RWY (if available) | No
+Key  | Type     | Description                                                                              | Required
+-----|----------|------------------------------------------------------------------------------------------|---------
+dep  | `string` | Full name of SID for RWY                                                                 | Yes
+nap  | `string` | Full name of NAP for RWY (if available)                                                  | No
+prio | `int`    | Priority of RWY for SID if no RWY is assigned by EuroScope (higher number = higher prio) | No
 
 ### Routing config
 All mandatory routings are stored in the `routing.json`file in the same directory as the `DelHel.dll` plugin. Within this file, you can specify routings with optional waypoints, and the corresponding altitudes (min/max cruise altitude for this route).

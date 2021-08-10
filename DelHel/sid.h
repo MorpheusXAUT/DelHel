@@ -7,6 +7,7 @@ struct sidinfo {
 	std::string rwy;
 	std::string dep;
 	std::string nap;
+	int prio{};
 };
 
 struct sid {
