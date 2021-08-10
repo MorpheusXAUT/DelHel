@@ -6,17 +6,21 @@
         "cfl": 5000,
         "rwys": {
           "11": {
-            "dep": "ADAMA1A"
+            "dep": "ADAMA1A",
+            "prio": 1
           },
           "16": {
-            "dep": "ADAMA1B"
+            "dep": "ADAMA1B",
+            "prio": 3
           },
           "29": {
             "dep": "ADAMA2C",
-            "nap": "ASPI2C"
+            "nap": "ASPI2C",
+            "prio": 2
           },
           "34": {
-            "dep": "ADAMA1D"
+            "dep": "ADAMA1D",
+            "prio": 4
           }
         }
       },
@@ -24,17 +28,21 @@
         "cfl": 5000,
         "rwys": {
           "11": {
-            "dep": "ARSIN1A"
+            "dep": "ARSIN1A",
+            "prio": 2
           },
           "16": {
-            "dep": "ARSIN1B"
+            "dep": "ARSIN1B",
+            "prio": 4
           },
           "29": {
             "dep": "ARSIN1C",
-            "nap": "EWUK1C"
+            "nap": "EWUK1C",
+            "prio": 3
           },
           "34": {
-            "dep": "ARSIN1D"
+            "dep": "ARSIN1D",
+            "prio": 1
           }
         }
       },
@@ -42,17 +50,21 @@
         "cfl": 5000,
         "rwys": {
           "11": {
-            "dep": "BUWUT1A"
+            "dep": "BUWUT1A",
+            "prio": 2
           },
           "16": {
-            "dep": "BUWUT1B"
+            "dep": "BUWUT1B",
+            "prio": 1
           },
           "29": {
             "dep": "BUWUT1C",
-            "nap": "UMSU3C"
+            "nap": "UMSU3C",
+            "prio": 3
           },
           "34": {
-            "dep": "BUWUT1D"
+            "dep": "BUWUT1D",
+            "prio": 4
           }
         }
       },
@@ -60,17 +72,21 @@
         "cfl": 5000,
         "rwys": {
           "11": {
-            "dep": "BUWUT1A"
+            "dep": "BUWUT1A",
+            "prio": 2
           },
           "16": {
-            "dep": "BUWUT1B"
+            "dep": "BUWUT1B",
+            "prio": 1
           },
           "29": {
             "dep": "BUWUT1C",
-            "nap": "UMSU3C"
+            "nap": "UMSU3C",
+            "prio": 3
           },
           "34": {
-            "dep": "BUWUT1D"
+            "dep": "BUWUT1D",
+            "prio": 4
           }
         }
       },
@@ -78,17 +94,21 @@
         "cfl": 5000,
         "rwys": {
           "11": {
-            "dep": "KOXER1A"
+            "dep": "KOXER1A",
+            "prio": 1
           },
           "16": {
-            "dep": "KOXER1B"
+            "dep": "KOXER1B",
+            "prio": 3
           },
           "29": {
             "dep": "KOXER1C",
-            "nap": "AGMI2C"
+            "nap": "AGMI2C",
+            "prio": 2
           },
           "34": {
-            "dep": "KOXER1D"
+            "dep": "KOXER1D",
+            "prio": 4
           }
         }
       },
@@ -96,17 +116,21 @@
         "cfl": 5000,
         "rwys": {
           "11": {
-            "dep": "LANUX3A"
+            "dep": "LANUX3A",
+            "prio": 2
           },
           "16": {
-            "dep": "LANUX5B"
+            "dep": "LANUX5B",
+            "prio": 1
           },
           "29": {
             "dep": "LANUX2C",
-            "nap": "UNGU2C"
+            "nap": "UNGU2C",
+            "prio": 3
           },
           "34": {
-            "dep": "LANUX6D"
+            "dep": "LANUX6D",
+            "prio": 4
           }
         }
       },
@@ -114,17 +138,21 @@
         "cfl": 5000,
         "rwys": {
           "11": {
-            "dep": "LEDVA3A"
+            "dep": "LEDVA3A",
+            "prio": 2
           },
           "16": {
-            "dep": "LEDVA2B"
+            "dep": "LEDVA2B",
+            "prio": 3
           },
           "29": {
             "dep": "LEDVA3C",
-            "nap": "VABG2C"
+            "nap": "VABG2C",
+            "prio": 1
           },
           "34": {
-            "dep": "LEDVA4D"
+            "dep": "LEDVA4D",
+            "prio": 4
           }
         }
       },
@@ -133,18 +161,22 @@
         "rwys": {
           "11": {
             "dep": "LUGEM1A",
-            "nap": "OSMO1A"
+            "nap": "OSMO1A",
+            "prio": 3
           },
           "16": {
-            "dep": "LUGEM2B"
+            "dep": "LUGEM2B",
+            "prio": 2
           },
           "29": {
             "dep": "LUGEM1C",
-            "nap": "OSMO2C"
+            "nap": "OSMO2C",
+            "prio": 4
           },
           "34": {
             "dep": "LUGEM1D",
-            "nap": "OSMO2D"
+            "nap": "OSMO2D",
+            "prio": 1
           }
         }
       },
@@ -152,18 +184,22 @@
         "cfl": 5000,
         "rwys": {
           "11": {
-            "dep": "MEDIX1A"
+            "dep": "MEDIX1A",
+            "prio": 3
           },
           "16": {
-            "dep": "MEDIX2B"
+            "dep": "MEDIX2B",
+            "prio": 2
           },
           "29": {
             "dep": "MEDIX1C",
-            "nap": "OTGA2C"
+            "nap": "OTGA2C",
+            "prio": 4
           },
           "34": {
             "dep": "MEDIX1D",
-            "nap": "OTGA2D"
+            "nap": "OTGA2D",
+            "prio": 1
           }
         }
       },
@@ -172,18 +208,22 @@
         "rwys": {
           "11": {
             "dep": "OSPEN2A",
-            "nap": "IMVO3A"
+            "nap": "IMVO3A",
+            "prio": 3
           },
           "16": {
-            "dep": "OSPEN5B"
+            "dep": "OSPEN5B",
+            "prio": 2
           },
           "29": {
             "dep": "OSPEN4C",
-            "nap": "IMVO3C"
+            "nap": "IMVO3C",
+            "prio": 4
           },
           "34": {
             "dep": "OSPEN3D",
-            "nap": "IMVO3D"
+            "nap": "IMVO3D",
+            "prio": 1
           }
         }
       },
@@ -192,18 +232,22 @@
         "rwys": {
           "11": {
             "dep": "RUPET1A",
-            "nap": "IRGO1A"
+            "nap": "IRGO1A",
+            "prio": 3
           },
           "16": {
-            "dep": "RUPET2B"
+            "dep": "RUPET2B",
+            "prio": 2
           },
           "29": {
             "dep": "RUPET2C",
-            "nap": "IRGO2C"
+            "nap": "IRGO2C",
+            "prio": 4
           },
           "34": {
             "dep": "RUPET1D",
-            "nap": "IRGO2D"
+            "nap": "IRGO2D",
+            "prio": 1
           }
         }
       },
@@ -211,16 +255,20 @@
         "cfl": 5000,
         "rwys": {
           "11": {
-            "dep": "SNU2A"
+            "dep": "SNU2A",
+            "prio": 3
           },
           "16": {
-            "dep": "SNU4B"
+            "dep": "SNU4B",
+            "prio": 2
           },
           "29": {
-            "dep": "SNU2C"
+            "dep": "SNU2C",
+            "prio": 4
           },
           "34": {
-            "dep": "SNU2D"
+            "dep": "SNU2D",
+            "prio": 1
           }
         }
       },
@@ -229,18 +277,22 @@
         "rwys": {
           "11": {
             "dep": "SOVIL1A",
-            "nap": "ODSU1A"
+            "nap": "ODSU1A",
+            "prio": 3
           },
           "16": {
-            "dep": "SOVIL2B"
+            "dep": "SOVIL2B",
+            "prio": 2
           },
           "29": {
             "dep": "SOVIL1C",
-            "nap": "ODSU2C"
+            "nap": "ODSU2C",
+            "prio": 4
           },
           "34": {
             "dep": "SOVIL1D",
-            "nap": "ODSU2D"
+            "nap": "ODSU2D",
+            "prio": 1
           }
         }
       },
@@ -248,18 +300,22 @@
         "cfl": 5000,
         "rwys": {
           "11": {
-            "dep": "STEIN2A"
+            "dep": "STEIN2A",
+            "prio": 2
           },
           "16": {
-            "dep": "STEIN4B"
+            "dep": "STEIN4B",
+            "prio": 4
           },
           "29": {
             "dep": "STEIN3C",
-            "nap": "EMKO3C"
+            "nap": "EMKO3C",
+            "prio": 3
           },
           "34": {
             "dep": "STEIN3D",
-            "nap": "EMKO2D"
+            "nap": "EMKO2D",
+            "prio": 1
           }
         }
       }
@@ -302,10 +358,12 @@
         "cfl": 16000,
         "rwys": {
           "08": {
-            "dep": "KPT5J"
+            "dep": "KPT5J",
+            "prio": 2
           },
           "26": {
-            "dep": "MOGTI3H"
+            "dep": "MOGTI3H",
+            "prio": 1
           }
         }
       },
@@ -313,10 +371,12 @@
         "cfl": 16000,
         "rwys": {
           "08": {
-            "dep": "KPT5J"
+            "dep": "KPT5J",
+            "prio": 1
           },
           "26": {
-            "dep": "MOGTI3H"
+            "dep": "MOGTI3H",
+            "prio": 2
           }
         }
       },
@@ -766,4 +826,4 @@
       }
     }
   }
- }
+}
