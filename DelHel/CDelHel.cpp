@@ -23,6 +23,8 @@ CDelHel::CDelHel() : EuroScopePlugIn::CPlugIn(
 	this->RegisterTagItemFunction("Process FPL (non-NAP)", TAG_FUNC_PROCESS_FP_NON_NAP);
 	this->RegisterTagItemFunction("Process FPL (NAP)", TAG_FUNC_PROCESS_FP_NAP);
 
+	this->RegisterDisplayType(PLUGIN_NAME, false, false, false, false);
+
 	this->debug = false;
 	this->updateCheck = false;
 	this->assignNap = false;
@@ -279,6 +281,12 @@ void CDelHel::OnFlightPlanDisconnect(EuroScopePlugIn::CFlightPlan FlightPlan)
 void CDelHel::OnAirportRunwayActivityChanged()
 {
 	this->UpdateActiveAirports();
+}
+
+EuroScopePlugIn::CRadarScreen* CDelHel::OnRadarScreenCreated(const char* sDisplayName, bool NeedRadarContent, bool GeoReferenced, bool CanBeSaved, bool CanBeCreated)
+{
+	this->radarScreen = new RadarScreen();
+	return this->radarScreen;
 }
 
 void CDelHel::LoadSettings()
@@ -549,6 +557,10 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 				return res;
 			}
 
+			if (!cad.SetSquawk(VFR_SQUAWK)) {
+				this->LogDebugMessage("Failed to set VFR squawk", cs);
+			}
+
 			this->LogDebugMessage("Skipping processing of VFR flightplan route", cs);
 
 			// Add to list of processed flightplans if not added by auto-processing already
@@ -719,6 +731,14 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 		if (!cad.SetClearedAltitude(cfl)) {
 			this->LogMessage("Failed to process flightplan, cannot set cleared flightlevel", cs);
 			return res;
+		}
+
+		if (this->radarScreen == nullptr) {
+			this->LogDebugMessage("Radar screen not initialised, cannot trigger automatic squawk assignment via TopSky", cs);
+		}
+		else {
+			this->radarScreen->StartTagFunction(cs.c_str(), nullptr, 0, cs.c_str(), TOPSKY_PLUGIN_NAME, TOPSKY_TAG_FUNC_ASSIGN_SQUAWK, POINT(), RECT());
+			this->LogDebugMessage("Triggered automatic squawk assignment via TopSky", cs);
 		}
 
 		this->LogDebugMessage("Successfully processed flightplan", cs);
