@@ -36,6 +36,9 @@
     <ClCompile Include="routing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RadarScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DelHel.def">
@@ -86,6 +89,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="routing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RadarScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
