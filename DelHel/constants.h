@@ -3,9 +3,9 @@
 #include <regex>
 
 #define PLUGIN_NAME    "DelHel"
-#define PLUGIN_VERSION "0.1.0"
+#define PLUGIN_VERSION "0.2.0"
 #define PLUGIN_AUTHOR  "Nick Mueller"
-#define PLUGIN_LICENSE "(c) 2020-2022, MIT License"
+#define PLUGIN_LICENSE "(c) 2020-2023, MIT License"
 #define PLUGIN_LATEST_VERSION_URL "https://raw.githubusercontent.com/MorpheusXAUT/DelHel/master/version.txt"
 #define PLUGIN_LATEST_DOWNLOAD_URL "https://github.com/MorpheusXAUT/DelHel/releases/latest"
 
