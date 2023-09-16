@@ -8,6 +8,7 @@
 #include <fstream>
 #include <filesystem>
 #include <algorithm>
+#include <psapi.h>
 
 #include "EuroScope/EuroScopePlugIn.h"
 #include "semver/semver.hpp"
@@ -47,6 +48,9 @@ private:
 	bool logMinMaxRFL;
 	bool checkMinMaxRFL;
 	bool flashOnMessage;
+	bool topSkyAvailable;
+	bool ccamsAvailable;
+	bool preferTopSkySquawkAssignment;
 	std::future<std::string> latestVersion;
 	std::map<std::string, airport> airports;
 	std::vector<std::string> processed;
@@ -69,5 +73,6 @@ private:
 	void LogDebugMessage(std::string message, std::string type);
 
 	void CheckForUpdate();
+	void CheckLoadedPlugins();
 };
 
