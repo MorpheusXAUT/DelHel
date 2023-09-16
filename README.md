@@ -260,14 +260,14 @@ If disabled (default setting), unread messages will only light up once, solidly 
 
 This setting will be saved to the EuroScope settings upon exit.
 
-#### Toggle between TopSky and CCAMS squawk assignments
+#### Toggle preferred TopSky squawk assignment
 
-`.delhel ccams`
+`.delhel prefertopsky`
 
-Toggles automatic squawk assignment between TopSky and CCAMS plugin functions. Will only work if respective plugin is installed - assignment will fail silently otherwise.
+Toggles automatic squawk assignment preferring TopSky, even if the CCAMS plugin is loaded.
 
-If enabled, CCAMS is used to automatically assign IFR and VFR squawks.  
-If disabled (default setting), TopSky will be used to automatically assign IFR squawks - VFR squawks are hardcoded to `7000`.
+If enabled, the TopSky plugin will be used for automatic squawk assignments, even if CCAMS might be loaded. If no TopSky plugin was found, `DelHel` will try to use CCAMS instead, if available.  
+If disabled (default setting), `DelHel` will check whether the CCAMS plugin is loaded. If it wasn't found, `DelHel` will attempt to use TopSky for squawk assignment.
 
 This setting will be saved to the EuroScope settings upon exit.
 

@@ -33,9 +33,12 @@ CDelHel::CDelHel() : EuroScopePlugIn::CPlugIn(
 	this->logMinMaxRFL = false;
 	this->checkMinMaxRFL = false;
 	this->flashOnMessage = false;
-	this->squawkAssignmentCCAMS = false;
+	this->topSkyAvailable = false;
+	this->ccamsAvailable = false;
+	this->preferTopSkySquawkAssignment = false;
 
 	this->LoadSettings();
+	this->CheckLoadedPlugins();
 
 	this->ReadAirportConfig();
 	this->ReadRoutingConfig();
@@ -193,17 +196,18 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 
 			return true;
 		}
-		else if (args[1] == "ccams") {
-			if (this->squawkAssignmentCCAMS) {
-				this->LogMessage("Switched to automatic squawk assignment via TopSky", "Config");
+		else if (args[1] == "prefertopsky") {
+			if (this->preferTopSkySquawkAssignment) {
+				this->LogMessage("No longer preferring TopSky squawk assignment, will use CCAMS if loaded", "Config");
 			}
 			else {
-				this->LogMessage("Switched to automatic squawk assignment via CCAMS", "Config");
+				this->LogMessage("Preferring TopSky squawk assignment, even if CCAMS is loaded", "Config");
 			}
 
-			this->squawkAssignmentCCAMS = !this->squawkAssignmentCCAMS;
+			this->preferTopSkySquawkAssignment = !this->preferTopSkySquawkAssignment;
 
 			this->SaveSettings();
+			this->CheckLoadedPlugins();
 
 			return true;
 		}
@@ -325,7 +329,7 @@ void CDelHel::LoadSettings()
 		std::istringstream(splitSettings[4]) >> this->logMinMaxRFL;
 		std::istringstream(splitSettings[5]) >> this->checkMinMaxRFL;
 		std::istringstream(splitSettings[6]) >> this->flashOnMessage;
-		std::istringstream(splitSettings[7]) >> this->squawkAssignmentCCAMS;
+		std::istringstream(splitSettings[7]) >> this->preferTopSkySquawkAssignment;
 
 		this->LogDebugMessage("Successfully loaded settings.");
 	}
@@ -344,7 +348,7 @@ void CDelHel::SaveSettings()
 		<< this->logMinMaxRFL << SETTINGS_DELIMITER
 		<< this->checkMinMaxRFL << SETTINGS_DELIMITER
 		<< this->flashOnMessage << SETTINGS_DELIMITER
-		<< this->squawkAssignmentCCAMS;
+		<< this->preferTopSkySquawkAssignment;
 
 	this->SaveDataToSettings(PLUGIN_NAME, "DelHel settings", ss.str().c_str());
 }
@@ -574,11 +578,15 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 				return res;
 			}
 
-			if (this->squawkAssignmentCCAMS && this->radarScreen != nullptr) {
+			if (this->radarScreen != nullptr && this->ccamsAvailable && !this->preferTopSkySquawkAssignment) {
 				this->radarScreen->StartTagFunction(cs.c_str(), nullptr, 0, cs.c_str(), CCAMS_PLUGIN_NAME, CCAMS_TAG_FUNC_ASSIGN_SQUAWK_VFR, POINT(), RECT());
 				this->LogDebugMessage("Triggered automatic VFR squawk assignment via CCAMS", cs);
-			} else if (!cad.SetSquawk(VFR_SQUAWK)) {
-				this->LogDebugMessage("Failed to set VFR squawk", cs);
+			}
+			else {
+				// TopSky doesn't have a dedicated VFR squawk assignment function. Force hardcoded VFR squawk assignment
+				if (!cad.SetSquawk(VFR_SQUAWK)) {
+					this->LogDebugMessage("Failed to set VFR squawk", cs);
+				}
 			}
 
 			this->LogDebugMessage("Skipping processing of VFR flightplan route", cs);
@@ -754,16 +762,23 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 		}
 
 		if (this->radarScreen == nullptr) {
-			this->LogDebugMessage("Radar screen not initialised, cannot trigger automatic squawk assignment via TopSky/CCAMS", cs);
+			this->LogDebugMessage("Radar screen not initialised, cannot trigger automatic squawk assignment via TopSky or CCAMS", cs);
 		}
 		else {
-			if (this->squawkAssignmentCCAMS) {
+			if (this->preferTopSkySquawkAssignment && this->topSkyAvailable) {
+				this->radarScreen->StartTagFunction(cs.c_str(), nullptr, 0, cs.c_str(), TOPSKY_PLUGIN_NAME, TOPSKY_TAG_FUNC_ASSIGN_SQUAWK, POINT(), RECT());
+				this->LogDebugMessage("Triggered automatic squawk assignment via TopSky", cs);
+			}
+			else if (this->ccamsAvailable) {
 				this->radarScreen->StartTagFunction(cs.c_str(), nullptr, 0, cs.c_str(), CCAMS_PLUGIN_NAME, CCAMS_TAG_FUNC_ASSIGN_SQUAWK_AUTO, POINT(), RECT());
 				this->LogDebugMessage("Triggered automatic squawk assignment via CCAMS", cs);
 			}
-			else {
+			else if (this->topSkyAvailable) {
 				this->radarScreen->StartTagFunction(cs.c_str(), nullptr, 0, cs.c_str(), TOPSKY_PLUGIN_NAME, TOPSKY_TAG_FUNC_ASSIGN_SQUAWK, POINT(), RECT());
 				this->LogDebugMessage("Triggered automatic squawk assignment via TopSky", cs);
+			}
+			else {
+				this->LogDebugMessage("Neither TopSky nor CCAMS are loaded, cannot trigger automatic squawk assignment", cs);
 			}
 		}
 
@@ -1054,6 +1069,47 @@ void CDelHel::CheckForUpdate()
 	}
 
 	this->latestVersion = std::future<std::string>();
+}
+
+void CDelHel::CheckLoadedPlugins()
+{
+	this->topSkyAvailable = false;
+	this->ccamsAvailable = false;
+
+	HMODULE hMods[1024];
+	HANDLE hProcess;
+	DWORD cbNeeded;
+	unsigned int i;
+
+	hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
+	if (hProcess == NULL) {
+		this->LogDebugMessage("Failed to check loaded plugins");
+		return;
+	}
+
+	if (EnumProcessModules(hProcess, hMods, sizeof(hMods), &cbNeeded)) {
+		for (i = 0; i < (cbNeeded / sizeof(HMODULE)); i++) {
+			TCHAR szModName[MAX_PATH];
+			if (GetModuleFileNameEx(hProcess, hMods[i], szModName, sizeof(szModName) / sizeof(TCHAR))) {
+				std::string moduleName = szModName;
+				size_t pos = moduleName.find_last_of("\\");
+				if (pos != std::string::npos) {
+					moduleName = moduleName.substr(pos + 1);
+				}
+
+				if (moduleName == TOPSKY_DLL_NAME) {
+					this->topSkyAvailable = true;
+					this->LogDebugMessage("Found TopSky plugin", "Config");
+				}
+				else if (moduleName == CCAMS_DLL_NAME) {
+					this->ccamsAvailable = true;
+					this->LogDebugMessage("Found CCAMS plugin", "Config");
+				}
+			}
+		}
+	}
+
+	CloseHandle(hProcess);
 }
 
 void __declspec (dllexport) EuroScopePlugInInit(EuroScopePlugIn::CPlugIn** ppPlugInInstance)

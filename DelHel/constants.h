@@ -19,7 +19,13 @@ const int TAG_FUNC_PROCESS_FP_NAP = 102;
 const int TAG_FUNC_PROCESS_FP_NON_NAP = 103;
 
 constexpr auto TOPSKY_PLUGIN_NAME = "TopSky plugin";
+constexpr auto TOPSKY_DLL_NAME = "TopSky.dll";
 const int TOPSKY_TAG_FUNC_ASSIGN_SQUAWK = 667;
+
+constexpr auto CCAMS_PLUGIN_NAME = "CCAMS";
+constexpr auto CCAMS_DLL_NAME = "CCAMS.dll";
+const int CCAMS_TAG_FUNC_ASSIGN_SQUAWK_AUTO = 871;
+const int CCAMS_TAG_FUNC_ASSIGN_SQUAWK_VFR = 873;
 
 const COLORREF TAG_COLOR_NONE = 0;
 const COLORREF TAG_COLOR_RED = RGB(200, 0, 0);
