@@ -6,18 +6,18 @@ The plugin performs validation of FPLs (**f**light **pl**ans), sets the appropri
 
 ## Table of Contents
 
-- [Getting started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-- [Usage](#usage)
-  - [Basics](#basics)
-  - [Tag items](#tag-items)
-  - [Tag functions](#tag-functions)
-  - [Chat commands](#chat-commands)
-  - [Airport config](#airport-config)
-- [Contributing](#contributing)
-  - [Development setup](#development-setup)
-- [License](#license)
+-   [Getting started](#getting-started)
+    -   [Prerequisites](#prerequisites)
+    -   [Installation](#installation)
+-   [Usage](#usage)
+    -   [Basics](#basics)
+    -   [Tag items](#tag-items)
+    -   [Tag functions](#tag-functions)
+    -   [Chat commands](#chat-commands)
+    -   [Airport config](#airport-config)
+-   [Contributing](#contributing)
+    -   [Development setup](#development-setup)
+-   [License](#license)
 
 ## Getting started
 
@@ -30,16 +30,16 @@ Since `DelHel` was developed as an EuroScope plugin, it requires a working insta
 1. Download the latest release (`DelHel.zip`) of `DelHel` from the [**Releases**](https://github.com/MorpheusXAUT/DelHel/releases/latest) section of this repository
 2. Extract `DelHel.dll` and `airports.json` and place them **in the same folder** (most likely somewhere inside your EuroScope sectorfile/profile setup, where other plugins are already set up)
 3. Start EuroScope and open the **Plug-ins** dialog in the settings menu (**OTHER SET**)
-![Plug-ins dialog](https://i.imgur.com/SrVtRp9.png)
+   ![Plug-ins dialog](https://i.imgur.com/SrVtRp9.png)
 4. **Load** the plugin by selecting the `DelHel.dll` you extracted and ensure the proper version is displayed
-![Load plugin](https://i.imgur.com/y6koC4g.png)
-`DelHel` will also confirm successful initialisation by logging its version to the **Messages** chat:
-`[08:34:10] DelHel: Version 0.0.1 loaded.`
+   ![Load plugin](https://i.imgur.com/y6koC4g.png)
+   `DelHel` will also confirm successful initialisation by logging its version to the **Messages** chat:
+   `[08:34:10] DelHel: Version 0.0.1 loaded.`
 5. Close the plugin dialog and open the departure list columns setup dialog (small **S** at the left side of your departure list)
-![Departure list columns setup dialog](https://i.imgur.com/MvFYkkh.png)
-6. (*Optional*) Add the **Flightplan Validation** column to your departure list by clicking **Add Item** and selecting the `DelHel / Flightplan Validation` **Tag Item type**. Pick a **Header name** and set a **Width** of 4 or greater. This column will display warnings and the status of each flightplan processed by DelHel, but is not strictly required for the plugin to function
+   ![Departure list columns setup dialog](https://i.imgur.com/MvFYkkh.png)
+6. (_Optional_) Add the **Flightplan Validation** column to your departure list by clicking **Add Item** and selecting the `DelHel / Flightplan Validation` **Tag Item type**. Pick a **Header name** and set a **Width** of 4 or greater. This column will display warnings and the status of each flightplan processed by DelHel, but is not strictly required for the plugin to function
 7. Assign the `DelHel / Process FPL` action as the **Left button** or **Right button** action of any of your tag items as desired. Triggering this function processes the selected flightplan using the default settings of `DelHel` (described in more detail in the [Process FPL](#process-fpl) section below)
-8. (*Optional*) Assign the `DelHel / Validation menu` action as the **Left button** or **Right button** action of any of your tag items as desired. Triggering this function opens the flightplan validation menu, allowing for more fine-grained processing of the selected flightplan (described in more detail in the [Validation Menu](#validation-menu) section below)
+8. (_Optional_) Assign the `DelHel / Validation menu` action as the **Left button** or **Right button** action of any of your tag items as desired. Triggering this function opens the flightplan validation menu, allowing for more fine-grained processing of the selected flightplan (described in more detail in the [Validation Menu](#validation-menu) section below)
 9. Close the departure list settings by clicking **OK**
 
 ## Usage
@@ -49,12 +49,13 @@ Since `DelHel` was developed as an EuroScope plugin, it requires a working insta
 By default, `DelHel` only performs some basic validations of flightplans, displaying warnings for potential issues found for each aircraft in your departure list via the [`Flightplan Validation`](#flightplan-validation) tag item. Additionally, flightplan processing and more detailed validations can be triggered manually using the [`Process FPL`](#process-fpl) tag functions.
 
 At the moment, `DelHel` supports the following validations and processing:
-- SID validation: ensures FPL has a valid SID fix for the departure airport and runway config as its first waypoint. Upon processing a flightplan, the calculated SID will be confirmed (added to the filed route in the FPL) so any changes to runway configs or different controller setups should have no effect.
-- NAP assignment: if available (and [enabled](#toggle-assignment-of-nap-sids)), noise abatement procedure SIDs will be assigned as appropriate based on runway config.
-- CFL (**c**leared **f**light **l**evel) validation: verifies correct CFL is set for selected SID. Processing a FPL automatically sets the correct CFL for the calculated SID.
-- RWY (**r**un**w**a**y**) validation: displays a warning if a runway assignment has been found in the flightplan as this might influence SID selection. Should no RWY be selected by EuroScope automatically (e.g. the filed SID fix does not have a SID for the active RWYs), `DelHel` will attempt to match the SIDs defined for all RWYs set as active in EuroScope to find an alternative valid departures (as defined in the `airports.json` file).
-- Flightplan cleanup: when processing a flightplan, some cleanup will be performed, removing any additional information the pilot might have included before the SID fix (e.g. a SID filed by the pilot), only leaving a valid speed/level group or a runway designation included. This prevents SID assignments filed by pilots from selecting an incorrect runway or procedure by accident.
-- INV (**Inv**alid routing): verifies that the filed flightplan contains a valid routing according to the maintained `routing.json` file. Those routes can e.g. be the SAXFRA compulsory routings or special Vatsim Event routings. Each route contains at least an entry point (= last waypoint of the SID) and optional waypoints. If waypoints are maintained, the flightplan has to contain those waypoints in identical sequence in order to pass the routing validation. "DCT"/"DIRECT"/Speed-Altitude-Blocks in the FP are omitted.
+
+-   SID validation: ensures FPL has a valid SID fix for the departure airport and runway config as its first waypoint. Upon processing a flightplan, the calculated SID will be confirmed (added to the filed route in the FPL) so any changes to runway configs or different controller setups should have no effect.
+-   NAP assignment: if available (and [enabled](#toggle-assignment-of-nap-sids)), noise abatement procedure SIDs will be assigned as appropriate based on runway config.
+-   CFL (**c**leared **f**light **l**evel) validation: verifies correct CFL is set for selected SID. Processing a FPL automatically sets the correct CFL for the calculated SID.
+-   RWY (**r**un**w**a**y**) validation: displays a warning if a runway assignment has been found in the flightplan as this might influence SID selection. Should no RWY be selected by EuroScope automatically (e.g. the filed SID fix does not have a SID for the active RWYs), `DelHel` will attempt to match the SIDs defined for all RWYs set as active in EuroScope to find an alternative valid departures (as defined in the `airports.json` file).
+-   Flightplan cleanup: when processing a flightplan, some cleanup will be performed, removing any additional information the pilot might have included before the SID fix (e.g. a SID filed by the pilot), only leaving a valid speed/level group or a runway designation included. This prevents SID assignments filed by pilots from selecting an incorrect runway or procedure by accident.
+-   INV (**Inv**alid routing): verifies that the filed flightplan contains a valid routing according to the maintained `routing.json` file. Those routes can e.g. be the SAXFRA compulsory routings or special Vatsim Event routings. Each route contains at least an entry point (= last waypoint of the SID) and optional waypoints. If waypoints are maintained, the flightplan has to contain those waypoints in identical sequence in order to pass the routing validation. "DCT"/"DIRECT"/Speed-Altitude-Blocks in the FP are omitted.
 
 Flightplans can be processed manually using the [`Process FPL`](#process-fpl) [tag function](#tag-functions) or automatically by toggling the [automatic processing](#toggle-automatic-processing) setting on.
 
@@ -121,7 +122,6 @@ The altitudes are maintained in the routing.json and can be disregarded by the c
 Caution, orange color.  
 Indicates, that the Requested Flight Level (RFL) is above the maxima for the filed route. This warning will only be displayed if [checking of min and max RFLs](#toggle-checking-of-min-and-max-rfls) is enabled (default off).  
 The altitudes are maintained in the routing.json and can be disregarded by the controller if necessary (e.g. depeding on active/inactive military areas along the route).
-
 
 ##### `INV`
 
@@ -260,6 +260,17 @@ If disabled (default setting), unread messages will only light up once, solidly 
 
 This setting will be saved to the EuroScope settings upon exit.
 
+#### Toggle between TopSky and CCAMS squawk assignments
+
+`.delhel ccams`
+
+Toggles automatic squawk assignment between TopSky and CCAMS plugin functions. Will only work if respective plugin is installed - assignment will fail silently otherwise.
+
+If enabled, CCAMS is used to automatically assign IFR and VFR squawks.  
+If disabled (default setting), TopSky will be used to automatically assign IFR squawks - VFR squawks are hardcoded to `7000`.
+
+This setting will be saved to the EuroScope settings upon exit.
+
 ### Airport config
 
 `DelHel` uses its airport config, stored in the `airports.json` file in the same directory as the `DelHel.dll` plugin DLL, to retrieve most of its configuration for validations and flightplan processing.  
@@ -269,27 +280,28 @@ The `airports.json` file is a [JSON](https://www.json.org/) file containing a to
 
 #### `Airport` object
 
-Key       | Type     | Description                                                                                   | Required
-----------|----------|-----------------------------------------------------------------------------------------------|---------
-elevation | `int`    | Airport elevation in feet (ft)                                                                | Yes
-sids      | `object` | Object with SID fixes as keys and `SID` objects as values, contains SIDs available at airport | Yes
+| Key       | Type     | Description                                                                                   | Required |
+| --------- | -------- | --------------------------------------------------------------------------------------------- | -------- |
+| elevation | `int`    | Airport elevation in feet (ft)                                                                | Yes      |
+| sids      | `object` | Object with SID fixes as keys and `SID` objects as values, contains SIDs available at airport | Yes      |
 
 #### `SID` object
 
-Key  | Type     | Description                                                                              | Required
------|----------|------------------------------------------------------------------------------------------|---------
-cfl  | `int`    | Initial CFL for SID in feet (ft)                                                         | Yes
-rwys | `object` | Object with RWYs as keys and `RWY` objects as values, contains RWYs SID is available for | Yes
+| Key  | Type     | Description                                                                              | Required |
+| ---- | -------- | ---------------------------------------------------------------------------------------- | -------- |
+| cfl  | `int`    | Initial CFL for SID in feet (ft)                                                         | Yes      |
+| rwys | `object` | Object with RWYs as keys and `RWY` objects as values, contains RWYs SID is available for | Yes      |
 
 #### `RWY` object
 
-Key  | Type     | Description                                                                              | Required
------|----------|------------------------------------------------------------------------------------------|---------
-dep  | `string` | Full name of SID for RWY                                                                 | Yes
-nap  | `string` | Full name of NAP for RWY (if available)                                                  | No
-prio | `int`    | Priority of RWY for SID if no RWY is assigned by EuroScope (higher number = higher prio) | No
+| Key  | Type     | Description                                                                              | Required |
+| ---- | -------- | ---------------------------------------------------------------------------------------- | -------- |
+| dep  | `string` | Full name of SID for RWY                                                                 | Yes      |
+| nap  | `string` | Full name of NAP for RWY (if available)                                                  | No       |
+| prio | `int`    | Priority of RWY for SID if no RWY is assigned by EuroScope (higher number = higher prio) | No       |
 
 ### Routing config
+
 All mandatory routings are stored in the `routing.json`file in the same directory as the `DelHel.dll` plugin. Within this file, you can specify routings with optional waypoints, and the corresponding altitudes (min/max cruise altitude for this route).
 
 Please make sure to follow the file structure, and checking the edited file with a [validator](https://jsonformatter.curiousconcept.com/).
@@ -297,20 +309,22 @@ Please make sure to follow the file structure, and checking the edited file with
 Root object contains the departure ICAO code in (4-letter) uppercase as key and a `entry` object as value.
 
 #### `entry` object
-Key    | Type     | Description                                                                 | Required
--------|----------|-----------------------------------------------------------------------------|---------
-name   | `string` | Describes the route entry waypoint, which is equal to the last SID-waypoint | Yes
-routes | `array`  | Storage for more specified routes, e.g. destinations, waypoints, etc.       | Yes
+
+| Key    | Type     | Description                                                                 | Required |
+| ------ | -------- | --------------------------------------------------------------------------- | -------- |
+| name   | `string` | Describes the route entry waypoint, which is equal to the last SID-waypoint | Yes      |
+| routes | `array`  | Storage for more specified routes, e.g. destinations, waypoints, etc.       | Yes      |
 
 #### `routes` array
+
 The routes array is filled with route objects including the following data:
 
-Key       | Type     | Description                                                                       | Required
-----------|----------|-----------------------------------------------------------------------------------|---------
-icao      | `string` | Describes the route entry waypoint, which is equal to the last SID-waypoint       | Yes
-maxlvl    | `int`    | Maximum allowed cruise altitude in flightlevel (= feet/100) for this route        | Yes
-minlvl    | `int`    | Minimum allowed cruise altitude in flightlevel (= feet/100) for this route        | Yes
-waypoints | `array`  | Enter all succeeding waypoints after the SID as strings, optional, can left blank | No
+| Key       | Type     | Description                                                                       | Required |
+| --------- | -------- | --------------------------------------------------------------------------------- | -------- |
+| icao      | `string` | Describes the route entry waypoint, which is equal to the last SID-waypoint       | Yes      |
+| maxlvl    | `int`    | Maximum allowed cruise altitude in flightlevel (= feet/100) for this route        | Yes      |
+| minlvl    | `int`    | Minimum allowed cruise altitude in flightlevel (= feet/100) for this route        | Yes      |
+| waypoints | `array`  | Enter all succeeding waypoints after the SID as strings, optional, can left blank | No       |
 
 ## Contributing
 
@@ -330,9 +344,9 @@ Note: triggering a breakpoint seems to cause both EuroScope and Visual Studio to
 
 This repository contains all external dependencies used by the project in their respective `include` and `lib` folders:
 
-- `EuroScope`: EuroScope plugin library
-- `nlohmann/json`: [JSON for Modern C++](https://github.com/nlohmann/json/) ([v3.9.1](https://github.com/nlohmann/json/releases/tag/v3.9.1), [MIT License](https://github.com/nlohmann/json/blob/develop/LICENSE.MIT)), used for parsing the airport config JSON
-- `semver`: [Semantic Versioning C++](https://github.com/Neargye/semver) ([v0.2.2](https://github.com/Neargye/semver/releases/tag/v0.2.2), [MIT License](https://github.com/Neargye/semver/blob/master/LICENSE)), used for version comparison of update check
+-   `EuroScope`: EuroScope plugin library
+-   `nlohmann/json`: [JSON for Modern C++](https://github.com/nlohmann/json/) ([v3.9.1](https://github.com/nlohmann/json/releases/tag/v3.9.1), [MIT License](https://github.com/nlohmann/json/blob/develop/LICENSE.MIT)), used for parsing the airport config JSON
+-   `semver`: [Semantic Versioning C++](https://github.com/Neargye/semver) ([v0.2.2](https://github.com/Neargye/semver/releases/tag/v0.2.2), [MIT License](https://github.com/Neargye/semver/blob/master/LICENSE)), used for version comparison of update check
 
 ## License
 

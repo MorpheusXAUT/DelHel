@@ -33,6 +33,7 @@ CDelHel::CDelHel() : EuroScopePlugIn::CPlugIn(
 	this->logMinMaxRFL = false;
 	this->checkMinMaxRFL = false;
 	this->flashOnMessage = false;
+	this->squawkAssignmentCCAMS = false;
 
 	this->LoadSettings();
 
@@ -55,7 +56,7 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 	if (starts_with(args[0], ".delhel")) {
 		if (args.size() == 1) {
 			std::ostringstream msg;
-			msg << "Version " << PLUGIN_VERSION << " loaded. Available commands: auto, debug, nap, reload, reset, update, rflblw, logminmaxrfl, minmaxrfl, flash";
+			msg << "Version " << PLUGIN_VERSION << " loaded. Available commands: auto, debug, nap, reload, reset, update, rflblw, logminmaxrfl, minmaxrfl, flash, ccams";
 
 			this->LogMessage(msg.str());
 
@@ -192,6 +193,20 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 
 			return true;
 		}
+		else if (args[1] == "ccams") {
+			if (this->squawkAssignmentCCAMS) {
+				this->LogMessage("Switched to automatic squawk assignment via TopSky", "Config");
+			}
+			else {
+				this->LogMessage("Switched to automatic squawk assignment via CCAMS", "Config");
+			}
+
+			this->squawkAssignmentCCAMS = !this->squawkAssignmentCCAMS;
+
+			this->SaveSettings();
+
+			return true;
+		}
 	}
 
 	return false;
@@ -295,7 +310,7 @@ void CDelHel::LoadSettings()
 	if (settings) {
 		std::vector<std::string> splitSettings = split(settings, SETTINGS_DELIMITER);
 
-		if (splitSettings.size() < 7) {
+		if (splitSettings.size() < 8) {
 			this->LogMessage("Invalid saved settings found, reverting to default.");
 
 			this->SaveSettings();
@@ -310,6 +325,7 @@ void CDelHel::LoadSettings()
 		std::istringstream(splitSettings[4]) >> this->logMinMaxRFL;
 		std::istringstream(splitSettings[5]) >> this->checkMinMaxRFL;
 		std::istringstream(splitSettings[6]) >> this->flashOnMessage;
+		std::istringstream(splitSettings[7]) >> this->squawkAssignmentCCAMS;
 
 		this->LogDebugMessage("Successfully loaded settings.");
 	}
@@ -327,7 +343,8 @@ void CDelHel::SaveSettings()
 		<< this->warnRFLBelowCFL << SETTINGS_DELIMITER
 		<< this->logMinMaxRFL << SETTINGS_DELIMITER
 		<< this->checkMinMaxRFL << SETTINGS_DELIMITER
-		<< this->flashOnMessage;
+		<< this->flashOnMessage << SETTINGS_DELIMITER
+		<< this->squawkAssignmentCCAMS;
 
 	this->SaveDataToSettings(PLUGIN_NAME, "DelHel settings", ss.str().c_str());
 }
@@ -557,7 +574,10 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 				return res;
 			}
 
-			if (!cad.SetSquawk(VFR_SQUAWK)) {
+			if (this->squawkAssignmentCCAMS && this->radarScreen != nullptr) {
+				this->radarScreen->StartTagFunction(cs.c_str(), nullptr, 0, cs.c_str(), CCAMS_PLUGIN_NAME, CCAMS_TAG_FUNC_ASSIGN_SQUAWK_VFR, POINT(), RECT());
+				this->LogDebugMessage("Triggered automatic VFR squawk assignment via CCAMS", cs);
+			} else if (!cad.SetSquawk(VFR_SQUAWK)) {
 				this->LogDebugMessage("Failed to set VFR squawk", cs);
 			}
 
@@ -734,11 +754,17 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 		}
 
 		if (this->radarScreen == nullptr) {
-			this->LogDebugMessage("Radar screen not initialised, cannot trigger automatic squawk assignment via TopSky", cs);
+			this->LogDebugMessage("Radar screen not initialised, cannot trigger automatic squawk assignment via TopSky/CCAMS", cs);
 		}
 		else {
-			this->radarScreen->StartTagFunction(cs.c_str(), nullptr, 0, cs.c_str(), TOPSKY_PLUGIN_NAME, TOPSKY_TAG_FUNC_ASSIGN_SQUAWK, POINT(), RECT());
-			this->LogDebugMessage("Triggered automatic squawk assignment via TopSky", cs);
+			if (this->squawkAssignmentCCAMS) {
+				this->radarScreen->StartTagFunction(cs.c_str(), nullptr, 0, cs.c_str(), CCAMS_PLUGIN_NAME, CCAMS_TAG_FUNC_ASSIGN_SQUAWK_AUTO, POINT(), RECT());
+				this->LogDebugMessage("Triggered automatic squawk assignment via CCAMS", cs);
+			}
+			else {
+				this->radarScreen->StartTagFunction(cs.c_str(), nullptr, 0, cs.c_str(), TOPSKY_PLUGIN_NAME, TOPSKY_TAG_FUNC_ASSIGN_SQUAWK, POINT(), RECT());
+				this->LogDebugMessage("Triggered automatic squawk assignment via TopSky", cs);
+			}
 		}
 
 		this->LogDebugMessage("Successfully processed flightplan", cs);

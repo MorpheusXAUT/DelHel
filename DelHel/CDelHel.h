@@ -47,6 +47,7 @@ private:
 	bool logMinMaxRFL;
 	bool checkMinMaxRFL;
 	bool flashOnMessage;
+	bool squawkAssignmentCCAMS;
 	std::future<std::string> latestVersion;
 	std::map<std::string, airport> airports;
 	std::vector<std::string> processed;
