@@ -271,6 +271,20 @@ If disabled (default setting), `DelHel` will check whether the CCAMS plugin is l
 
 This setting will be saved to the EuroScope settings upon exit.
 
+`.delhel config XX`
+
+Enables custom config XX, allowing custom runway overrides for SID waypoints when multiple active departure runways are being used.
+
+If enabled, the plugin will override runway assignments according to the custom config in the `customconfigs.json` file.
+
+This settings will not be saved and is for the current session only.
+
+`.delhel config none`
+
+Disables the use of custom configs, runways will be assigned according to the sector file or priorities from the `airports.json` file.
+
+This settings will not be saved and is for the current session only.
+
 ### Airport config
 
 `DelHel` uses its airport config, stored in the `airports.json` file in the same directory as the `DelHel.dll` plugin DLL, to retrieve most of its configuration for validations and flightplan processing.  
