@@ -770,15 +770,15 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 		}
 	}
 	else {
-		//if (!fpd.SetRoute(join(route).c_str())) {
-		//	this->LogMessage("Failed to process flightplan, cannot set cleaned route", cs);
-		//	return res;
-		//}
+		if (!fpd.SetRoute(join(route).c_str())) {
+			this->LogMessage("Failed to process flightplan, cannot set cleaned route", cs);
+			return res;
+		}
 
-		//if (!fpd.AmendFlightPlan()) {
-		//	this->LogMessage("Failed to process flightplan, cannot amend flightplan after setting cleaned route", cs);
-		//	return res;
-		//}
+		if (!fpd.AmendFlightPlan()) {
+			this->LogMessage("Failed to process flightplan, cannot amend flightplan after setting cleaned route", cs);
+			return res;
+		}
 
 		std::map<std::string, sidinfo>::iterator sit{};
 		std::string rwy = fpd.GetDepartureRwy();
