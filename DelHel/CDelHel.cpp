@@ -36,6 +36,18 @@ CDelHel::CDelHel() : EuroScopePlugIn::CPlugIn(
 	this->topSkyAvailable = false;
 	this->ccamsAvailable = false;
 	this->preferTopSkySquawkAssignment = false;
+	this->customConfigActive = false;
+	this->activeConfig = "";
+
+	// Test data for now, TODO move to config file
+	config_sid g1_lugem = {
+		"LUGEM",
+	};
+	g1_lugem.rwyPrio.emplace("34", 1);
+	config g1 = {
+	};
+	g1.sids.emplace("LUGEM", g1_lugem);
+	this->configs.emplace("G1", g1);
 
 	this->LoadSettings();
 	this->CheckLoadedPlugins();
@@ -211,6 +223,31 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 
 			return true;
 		}
+		else if (args[1] == "config")
+		{
+			if (args[2] == "none")
+			{
+				this->LogMessage("No longer using custom config", "Config");
+				this->customConfigActive = false;
+				this->activeConfig = "";
+
+				return true;
+			}
+
+			auto config = this->configs.find(args[2]);
+			if (config == this->configs.end()) 
+			{
+				this->LogMessage("Invalid config specified", "Config");
+			}
+			else
+			{
+				this->LogMessage("Switched to custom config: " + args[2], "Config");
+				this->customConfigActive = true;
+				this->activeConfig = args[2];
+			}
+
+			return true;
+		}
 	}
 
 	return false;
@@ -314,7 +351,7 @@ void CDelHel::LoadSettings()
 	if (settings) {
 		std::vector<std::string> splitSettings = split(settings, SETTINGS_DELIMITER);
 
-		if (splitSettings.size() < 8) {
+		if (splitSettings.size() < 9) {
 			this->LogMessage("Invalid saved settings found, reverting to default.");
 
 			this->SaveSettings();
@@ -669,31 +706,57 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 		}
 	}
 	else {
-		if (!fpd.SetRoute(join(route).c_str())) {
-			this->LogMessage("Failed to process flightplan, cannot set cleaned route", cs);
-			return res;
-		}
+		//if (!fpd.SetRoute(join(route).c_str())) {
+		//	this->LogMessage("Failed to process flightplan, cannot set cleaned route", cs);
+		//	return res;
+		//}
 
-		if (!fpd.AmendFlightPlan()) {
-			this->LogMessage("Failed to process flightplan, cannot amend flightplan after setting cleaned route", cs);
-			return res;
-		}
+		//if (!fpd.AmendFlightPlan()) {
+		//	this->LogMessage("Failed to process flightplan, cannot amend flightplan after setting cleaned route", cs);
+		//	return res;
+		//}
 
 		std::map<std::string, sidinfo>::iterator sit{};
 		std::string rwy = fpd.GetDepartureRwy();
-		if (rwy == "") {
-			this->LogDebugMessage("No runway assigned, attempting to pick first active runway for SID", cs);
+		if (rwy == "" || this->customConfigActive) { 
+			this->LogDebugMessage("No runway assigned, or override active, attempting to pick first active runway for SID", cs);
 
 			// SIDs can have a priority assigned per runway, allowing for "hierarchy" depending on runway config (as currently possible in ES sectorfiles).
 			// If no priority is assigned, the default of 0 will be used and the first active runway will be picked.
 			int prio = -1;
 			for (auto [r, active] : ap.rwys) {
 				if (active) {
+					this->LogDebugMessage("Checking active runway " + r, cs);
 					auto s = sid.rwys.find(r);
-					if (s != sid.rwys.end() && s->second.prio > prio) {
-						sit = s;
-						rwy = r;
-						prio = sit->second.prio;
+					if (s != sid.rwys.end()) {
+						if (this->customConfigActive)
+						{
+							this->LogDebugMessage("Custom config " + this->activeConfig + " active, check for custom config of SID wp: " + sid.wp, cs);
+							if (!this->configs[this->activeConfig].sids.empty()) {
+								auto customSid = this->configs[this->activeConfig].sids.find(sid.wp);
+								if (customSid != this->configs[this->activeConfig].sids.end())
+								{
+									this->LogDebugMessage("Found SID wp " + customSid->first, cs);
+									if (!customSid->second.rwyPrio.empty()) {
+										auto customRwy = customSid->second.rwyPrio.find(r);
+										if (customRwy != customSid->second.rwyPrio.end())
+										{
+											this->LogDebugMessage("Found SID rwy " + customRwy->first, cs);
+											if (customRwy->second > prio)
+											{
+												this->LogDebugMessage("Found and applied custom RWY priority override for config " + this->activeConfig, cs);
+												rwy = r;
+												prio = customRwy->second;
+											}
+										}
+									}
+								}
+							}
+						}
+						else if (rwy == "" && s->second.prio > prio) {
+							rwy = r;
+							prio = sit->second.prio;
+						}
 					}
 				}
 			}
@@ -712,9 +775,8 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 			/*res.tag = "SID";
 			res.color = TAG_COLOR_GREEN;*/
 		}
-		else {
-			sit = sid.rwys.find(rwy);
-		}
+		
+		sit = sid.rwys.find(rwy);
 
 		if (sit == sid.rwys.end()) {
 			this->LogMessage("Invalid flightplan, no matching SID found for runway", cs);
@@ -730,12 +792,15 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 
 		std::ostringstream sssid;
 		if (nap && sidinfo.nap != "") {
+			this->LogDebugMessage("--> Assigned sid/rwy: " + sidinfo.nap + "/" + rwy, cs);
 			sssid << sidinfo.nap;
 		}
 		else {
+			this->LogDebugMessage("--> Assigned sid/rwy: " + sidinfo.dep + "/" + rwy, cs);
 			sssid << sidinfo.dep;
 		}
 		sssid << "/" << rwy;
+
 
 		route.insert(route.begin(), sssid.str());
 

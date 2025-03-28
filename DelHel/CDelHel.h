@@ -20,6 +20,7 @@
 #include "validation.h"
 #include "flightplan.h"
 #include "sid.h"
+#include "config.h"
 #include "RadarScreen.h"
 
 using json = nlohmann::json;
@@ -51,9 +52,12 @@ private:
 	bool topSkyAvailable;
 	bool ccamsAvailable;
 	bool preferTopSkySquawkAssignment;
+	bool customConfigActive;
+	std::string activeConfig;
 	std::future<std::string> latestVersion;
 	std::map<std::string, airport> airports;
 	std::vector<std::string> processed;
+	std::map<std::string, config> configs;
 	RadarScreen* radarScreen;
 
 	void LoadSettings();
