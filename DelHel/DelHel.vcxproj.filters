@@ -47,6 +47,9 @@
     <None Include="res\DelHel.rc2">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\customconfigs.json">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">

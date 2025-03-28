@@ -39,21 +39,12 @@ CDelHel::CDelHel() : EuroScopePlugIn::CPlugIn(
 	this->customConfigActive = false;
 	this->activeConfig = "";
 
-	// Test data for now, TODO move to config file
-	config_sid g1_lugem = {
-		"LUGEM",
-	};
-	g1_lugem.rwyPrio.emplace("34", 1);
-	config g1 = {
-	};
-	g1.sids.emplace("LUGEM", g1_lugem);
-	this->configs.emplace("G1", g1);
-
 	this->LoadSettings();
 	this->CheckLoadedPlugins();
 
 	this->ReadAirportConfig();
 	this->ReadRoutingConfig();
+	this->ReadCustomConfigs();
 
 	if (this->updateCheck) {
 		this->latestVersion = std::async(FetchLatestVersion);
@@ -388,6 +379,79 @@ void CDelHel::SaveSettings()
 		<< this->preferTopSkySquawkAssignment;
 
 	this->SaveDataToSettings(PLUGIN_NAME, "DelHel settings", ss.str().c_str());
+}
+
+void CDelHel::ReadCustomConfigs()
+{
+	json j;
+
+	try {
+		std::filesystem::path base2(GetPluginDirectory());
+		base2.append("customconfigs.json");
+
+		std::ifstream ifs(base2.c_str());
+
+		j = json::parse(ifs);
+	}
+	catch (std::exception e)
+	{
+		this->LogMessage("Failed to read custom configs json. Error: " + std::string(e.what()), "Config");
+		return;
+	}
+
+	for (auto& [configName, jconfig] : j.items())
+	{
+		std::string def = jconfig.value<std::string>("def", "");
+		if (def == "")
+		{
+			this->LogMessage("Missing default runway for \"" + configName + "\".", "Config");
+			continue;
+		}
+		config c{
+			def
+		};
+
+		json sids;
+		try
+		{
+			sids = jconfig.at("sids");
+		}
+		catch (std::exception e)
+		{
+			this->LogMessage("Failed to get SIDs for config \"" + configName + "\". Error: " + std::string(e.what()), "Config");
+			continue;
+		}
+
+		for (auto& [wp, jwp] : sids.items())
+		{
+			config_sid cs{
+				wp
+			};
+
+			json rwys;
+			try
+			{
+				rwys = jwp.at("rwys");
+			}
+			catch (std::exception e)
+			{
+				this->LogMessage("Failed to get RWYs for WP \"" + wp + "\" in \"" + configName + "\". Error: " + std::string(e.what()), "Config");
+				continue;
+			}
+
+			for (auto& [rwy, jrwy] : rwys.items())
+			{
+				int prio = jrwy.value<int>("prio", 0);
+				cs.rwyPrio.emplace(rwy, prio);
+			}
+
+			c.sids.emplace(wp, cs);
+		}
+
+		this->configs.emplace(configName, c);
+	}
+
+	this->LogMessage("Loaded " + std::to_string(this->configs.size()) + " custom config(s)...", "Config");
 }
 
 void CDelHel::ReadRoutingConfig()
@@ -751,6 +815,13 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 										}
 									}
 								}
+							}
+
+							if (this->configs[this->activeConfig].def == r && 1 > prio)
+							{
+								this->LogDebugMessage("Found and applied custom default-RWY priority override for config " + this->activeConfig, cs);
+								rwy = r;
+								prio = 1;
 							}
 						}
 						else if (rwy == "" && s->second.prio > prio) {

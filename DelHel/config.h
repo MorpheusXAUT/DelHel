@@ -11,5 +11,6 @@ struct config_sid
 
 struct config
 {
+	std::string def;
 	std::map <std::string, config_sid> sids;
 };

@@ -64,6 +64,7 @@ private:
 	void SaveSettings();
 	void ReadRoutingConfig();
 	void ReadAirportConfig();
+	void ReadCustomConfigs();
 	void UpdateActiveAirports();
 
 	validation ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap, bool validateOnly = false);
