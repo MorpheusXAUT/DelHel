@@ -451,7 +451,7 @@ void CDelHel::ReadCustomConfigs()
 		this->configs.emplace(configName, c);
 	}
 
-	this->LogMessage("Loaded " + std::to_string(this->configs.size()) + " custom config(s)...", "Config");
+	this->LogDebugMessage("Loaded " + std::to_string(this->configs.size()) + " custom config(s)...", "Config");
 }
 
 void CDelHel::ReadRoutingConfig()
