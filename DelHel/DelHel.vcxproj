@@ -230,7 +230,7 @@
   <ItemGroup>
     <ClInclude Include="airport.h" />
     <ClInclude Include="CDelHel.h" />
-    <ClInclude Include="config.h" />
+    <ClInclude Include="rwy_config.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="DelHel.h" />
     <ClInclude Include="flightplan.h" />

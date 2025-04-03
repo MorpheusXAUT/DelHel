@@ -20,7 +20,7 @@
 #include "validation.h"
 #include "flightplan.h"
 #include "sid.h"
-#include "config.h"
+#include "rwy_config.h"
 #include "RadarScreen.h"
 
 using json = nlohmann::json;
@@ -57,7 +57,7 @@ private:
 	std::future<std::string> latestVersion;
 	std::map<std::string, airport> airports;
 	std::vector<std::string> processed;
-	std::map<std::string, config> configs;
+	std::map<std::string, rwy_config> configs;
 	RadarScreen* radarScreen;
 
 	void LoadSettings();

@@ -62,7 +62,7 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 	if (starts_with(args[0], ".delhel")) {
 		if (args.size() == 1) {
 			std::ostringstream msg;
-			msg << "Version " << PLUGIN_VERSION << " loaded. Available commands: auto, debug, nap, reload, reset, update, rflblw, logminmaxrfl, minmaxrfl, flash, ccams";
+			msg << "Version " << PLUGIN_VERSION << " loaded. Available commands: auto, debug, nap, reload, reset, update, rflblw, logminmaxrfl, minmaxrfl, flash, ccams, rwycfg XX/none";
 
 			this->LogMessage(msg.str());
 
@@ -214,27 +214,29 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 
 			return true;
 		}
-		else if (args[1] == "config")
+		else if (args[1] == "rwycfg")
 		{
-			if (args[2] == "none")
+			std::string arg2 = args[2];
+			to_upper(arg2);
+			if (arg2 == "NONE")
 			{
-				this->LogMessage("No longer using custom config", "Config");
+				this->LogMessage("No longer using custom runway config", "Config");
 				this->customConfigActive = false;
 				this->activeConfig = "";
 
 				return true;
 			}
 
-			auto config = this->configs.find(args[2]);
+			auto config = this->configs.find(arg2);
 			if (config == this->configs.end()) 
 			{
-				this->LogMessage("Invalid config specified", "Config");
+				this->LogMessage("Invalid custom runway config specified", "Config");
 			}
 			else
 			{
-				this->LogMessage("Switched to custom config: " + args[2], "Config");
+				this->LogMessage("Switched to custom runway config: " + arg2, "Config");
 				this->customConfigActive = true;
-				this->activeConfig = args[2];
+				this->activeConfig = arg2;
 			}
 
 			return true;
@@ -389,6 +391,12 @@ void CDelHel::ReadCustomConfigs()
 		std::filesystem::path base2(GetPluginDirectory());
 		base2.append("customconfigs.json");
 
+		// Custom runway config file is optional, skip reading if it doesn't exist
+		if (!std::filesystem::exists(base2))
+		{
+			return;
+		}
+
 		std::ifstream ifs(base2.c_str());
 
 		j = json::parse(ifs);
@@ -401,13 +409,15 @@ void CDelHel::ReadCustomConfigs()
 
 	for (auto& [configName, jconfig] : j.items())
 	{
+		std::string configUpper = configName;
+		to_upper(configUpper);
 		std::string def = jconfig.value<std::string>("def", "");
 		if (def == "")
 		{
-			this->LogMessage("Missing default runway for \"" + configName + "\".", "Config");
+			this->LogMessage("Missing default runway for \"" + configUpper + "\".", "Config");
 			continue;
 		}
-		config c{
+		rwy_config c{
 			def
 		};
 
@@ -418,7 +428,7 @@ void CDelHel::ReadCustomConfigs()
 		}
 		catch (std::exception e)
 		{
-			this->LogMessage("Failed to get SIDs for config \"" + configName + "\". Error: " + std::string(e.what()), "Config");
+			this->LogMessage("Failed to get SIDs for config \"" + configUpper + "\". Error: " + std::string(e.what()), "Config");
 			continue;
 		}
 
@@ -435,7 +445,7 @@ void CDelHel::ReadCustomConfigs()
 			}
 			catch (std::exception e)
 			{
-				this->LogMessage("Failed to get RWYs for WP \"" + wp + "\" in \"" + configName + "\". Error: " + std::string(e.what()), "Config");
+				this->LogMessage("Failed to get RWYs for WP \"" + wp + "\" in \"" + configUpper + "\". Error: " + std::string(e.what()), "Config");
 				continue;
 			}
 
@@ -448,7 +458,7 @@ void CDelHel::ReadCustomConfigs()
 			c.sids.emplace(wp, cs);
 		}
 
-		this->configs.emplace(configName, c);
+		this->configs.emplace(configUpper, c);
 	}
 
 	this->LogDebugMessage("Loaded " + std::to_string(this->configs.size()) + " custom config(s)...", "Config");

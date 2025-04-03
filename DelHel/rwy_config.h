@@ -9,7 +9,7 @@ struct config_sid
 	std::map <std::string, int> rwyPrio;
 };
 
-struct config
+struct rwy_config
 {
 	std::string def;
 	std::map <std::string, config_sid> sids;
