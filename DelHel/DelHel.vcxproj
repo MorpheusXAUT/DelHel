@@ -223,7 +223,9 @@
     <CopyFileToFolders Include="..\routing.json">
       <FileType>Document</FileType>
     </CopyFileToFolders>
-    <None Include="..\customconfigs.json" />
+    <CopyFileToFolders Include="..\customconfigs.json">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
     <None Include="DelHel.def" />
     <None Include="res\DelHel.rc2" />
   </ItemGroup>

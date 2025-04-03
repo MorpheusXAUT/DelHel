@@ -36,8 +36,7 @@ CDelHel::CDelHel() : EuroScopePlugIn::CPlugIn(
 	this->topSkyAvailable = false;
 	this->ccamsAvailable = false;
 	this->preferTopSkySquawkAssignment = false;
-	this->customConfigActive = false;
-	this->activeConfig = "";
+	this->customRunwayConfig = "";
 
 	this->LoadSettings();
 	this->CheckLoadedPlugins();
@@ -62,7 +61,7 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 	if (starts_with(args[0], ".delhel")) {
 		if (args.size() == 1) {
 			std::ostringstream msg;
-			msg << "Version " << PLUGIN_VERSION << " loaded. Available commands: auto, debug, nap, reload, reset, update, rflblw, logminmaxrfl, minmaxrfl, flash, ccams, rwycfg XX/none";
+			msg << "Version " << PLUGIN_VERSION << " loaded. Available commands: auto, debug, nap, reload, reset, update, rflblw, logminmaxrfl, minmaxrfl, flash, ccams, rwycfg";
 
 			this->LogMessage(msg.str());
 
@@ -216,27 +215,37 @@ bool CDelHel::OnCompileCommand(const char* sCommandLine)
 		}
 		else if (args[1] == "rwycfg")
 		{
-			std::string arg2 = args[2];
-			to_upper(arg2);
-			if (arg2 == "NONE")
+			if (args.size() < 3)
+			{
+				std::ostringstream msg;
+				msg << "Select custom runway config to apply. Currently active: " << (this->customRunwayConfig.empty() ? "none" : this->customRunwayConfig) << ". Available values : none(disables custom config)";
+				for (auto& [name, config] : this->runwayConfigs)
+				{
+					msg << ", " << name;
+				}
+				this->LogMessage(msg.str(), "Config");
+				return true;
+			}
+
+			std::string cfg = args[2];
+			to_upper(cfg);
+			if (cfg == "NONE")
 			{
 				this->LogMessage("No longer using custom runway config", "Config");
-				this->customConfigActive = false;
-				this->activeConfig = "";
+				this->customRunwayConfig = "";
 
 				return true;
 			}
 
-			auto config = this->configs.find(arg2);
-			if (config == this->configs.end()) 
+			auto config = this->runwayConfigs.find(cfg);
+			if (config == this->runwayConfigs.end())
 			{
 				this->LogMessage("Invalid custom runway config specified", "Config");
 			}
 			else
 			{
-				this->LogMessage("Switched to custom runway config: " + arg2, "Config");
-				this->customConfigActive = true;
-				this->activeConfig = arg2;
+				this->LogMessage("Switched to custom runway config: " + cfg, "Config");
+				this->customRunwayConfig = cfg;
 			}
 
 			return true;
@@ -394,6 +403,7 @@ void CDelHel::ReadCustomConfigs()
 		// Custom runway config file is optional, skip reading if it doesn't exist
 		if (!std::filesystem::exists(base2))
 		{
+			this->LogDebugMessage("No custom runway config file found, skipping loading.", "Config");
 			return;
 		}
 
@@ -403,7 +413,7 @@ void CDelHel::ReadCustomConfigs()
 	}
 	catch (std::exception e)
 	{
-		this->LogMessage("Failed to read custom configs json. Error: " + std::string(e.what()), "Config");
+		this->LogMessage("Failed to read custom runway configs json. Error: " + std::string(e.what()), "Config");
 		return;
 	}
 
@@ -428,13 +438,13 @@ void CDelHel::ReadCustomConfigs()
 		}
 		catch (std::exception e)
 		{
-			this->LogMessage("Failed to get SIDs for config \"" + configUpper + "\". Error: " + std::string(e.what()), "Config");
+			this->LogMessage("Failed to get SIDs for runway config \"" + configUpper + "\". Error: " + std::string(e.what()), "Config");
 			continue;
 		}
 
 		for (auto& [wp, jwp] : sids.items())
 		{
-			config_sid cs{
+			rwy_config_sid cs{
 				wp
 			};
 
@@ -458,10 +468,10 @@ void CDelHel::ReadCustomConfigs()
 			c.sids.emplace(wp, cs);
 		}
 
-		this->configs.emplace(configUpper, c);
+		this->runwayConfigs.emplace(configUpper, c);
 	}
 
-	this->LogDebugMessage("Loaded " + std::to_string(this->configs.size()) + " custom config(s)...", "Config");
+	this->LogDebugMessage("Loaded " + std::to_string(this->runwayConfigs.size()) + " custom runway config(s).", "Config");
 }
 
 void CDelHel::ReadRoutingConfig()
@@ -792,7 +802,7 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 
 		std::map<std::string, sidinfo>::iterator sit{};
 		std::string rwy = fpd.GetDepartureRwy();
-		if (rwy == "" || this->customConfigActive) { 
+		if (rwy == "" || !this->customRunwayConfig.empty()) { 
 			this->LogDebugMessage("No runway assigned, or override active, attempting to pick first active runway for SID", cs);
 
 			// SIDs can have a priority assigned per runway, allowing for "hierarchy" depending on runway config (as currently possible in ES sectorfiles).
@@ -803,12 +813,12 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 					this->LogDebugMessage("Checking active runway " + r, cs);
 					auto s = sid.rwys.find(r);
 					if (s != sid.rwys.end()) {
-						if (this->customConfigActive)
+						if (!this->customRunwayConfig.empty())
 						{
-							this->LogDebugMessage("Custom config " + this->activeConfig + " active, check for custom config of SID wp: " + sid.wp, cs);
-							if (!this->configs[this->activeConfig].sids.empty()) {
-								auto customSid = this->configs[this->activeConfig].sids.find(sid.wp);
-								if (customSid != this->configs[this->activeConfig].sids.end())
+							this->LogDebugMessage("Custom config " + this->customRunwayConfig + " active, check for custom config of SID wp: " + sid.wp, cs);
+							if (!this->runwayConfigs[this->customRunwayConfig].sids.empty()) {
+								auto customSid = this->runwayConfigs[this->customRunwayConfig].sids.find(sid.wp);
+								if (customSid != this->runwayConfigs[this->customRunwayConfig].sids.end())
 								{
 									this->LogDebugMessage("Found SID wp " + customSid->first, cs);
 									if (!customSid->second.rwyPrio.empty()) {
@@ -818,7 +828,7 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 											this->LogDebugMessage("Found SID rwy " + customRwy->first, cs);
 											if (customRwy->second > prio)
 											{
-												this->LogDebugMessage("Found and applied custom RWY priority override for config " + this->activeConfig, cs);
+												this->LogDebugMessage("Found and applied custom RWY priority override for config " + this->customRunwayConfig, cs);
 												rwy = r;
 												prio = customRwy->second;
 											}
@@ -827,9 +837,9 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 								}
 							}
 
-							if (this->configs[this->activeConfig].def == r && 1 > prio)
+							if (this->runwayConfigs[this->customRunwayConfig].def == r && 1 > prio)
 							{
-								this->LogDebugMessage("Found and applied custom default-RWY priority override for config " + this->activeConfig, cs);
+								this->LogDebugMessage("Found and applied custom default-RWY priority override for config " + this->customRunwayConfig, cs);
 								rwy = r;
 								prio = 1;
 							}

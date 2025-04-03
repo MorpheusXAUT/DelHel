@@ -53,11 +53,11 @@ private:
 	bool ccamsAvailable;
 	bool preferTopSkySquawkAssignment;
 	bool customConfigActive;
-	std::string activeConfig;
+	std::string customRunwayConfig;
 	std::future<std::string> latestVersion;
 	std::map<std::string, airport> airports;
 	std::vector<std::string> processed;
-	std::map<std::string, rwy_config> configs;
+	std::map<std::string, rwy_config> runwayConfigs;
 	RadarScreen* radarScreen;
 
 	void LoadSettings();

@@ -3,7 +3,7 @@
 #include <string>
 #include <map>
 
-struct config_sid
+struct rwy_config_sid
 {
 	std::string wp;
 	std::map <std::string, int> rwyPrio;
@@ -12,5 +12,5 @@ struct config_sid
 struct rwy_config
 {
 	std::string def;
-	std::map <std::string, config_sid> sids;
+	std::map <std::string, rwy_config_sid> sids;
 };
