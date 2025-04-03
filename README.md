@@ -15,7 +15,7 @@ The plugin performs validation of FPLs (**f**light **pl**ans), sets the appropri
     -   [Tag functions](#tag-functions)
     -   [Chat commands](#chat-commands)
     -   [Airport config](#airport-config)
-    -   [Custom config's config](#custom-configs-config)
+    -   [Custom runway configs](#custom-runway-configs)
 -   [Contributing](#contributing)
     -   [Development setup](#development-setup)
 -   [License](#license)
@@ -272,19 +272,21 @@ If disabled (default setting), `DelHel` will check whether the CCAMS plugin is l
 
 This setting will be saved to the EuroScope settings upon exit.
 
-`.delhel config XX`
+#### Set custom runway configuration
 
-Enables custom config XX, allowing custom runway overrides for SID waypoints when multiple active departure runways are being used.
+`.delhel rwycfg <CONFIG>`
+
+Enables custom arunway config, allowing custom runway overrides for SID waypoints when multiple active departure runways are being used.
 
 If enabled, the plugin will override runway assignments according to the custom config in the `customconfigs.json` file.
 
 This settings will not be saved and is for the current session only.
 
-`.delhel config none`
+`.delhel rwycfg none`
 
-Disables the use of custom configs, runways will be assigned according to the sector file or priorities from the `airports.json` file.
+Setting the custom runway configuation `none` disables the use of custom configs, runways will be assigned according to the sector file or priorities from the `airports.json` file.
 
-This settings will not be saved and is for the current session only.
+All entries are case-insensitive.
 
 ### Airport config
 
@@ -341,7 +343,7 @@ The routes array is filled with route objects including the following data:
 | minlvl    | `int`    | Minimum allowed cruise altitude in flightlevel (= feet/100) for this route        | Yes      |
 | waypoints | `array`  | Enter all succeeding waypoints after the SID as strings, optional, can left blank | No       |
 
-### Custom config's config
+### Custom runway configs
 
 Optionally allows you to define custom departure runway assignments for specific SID waypoints - when using multiple departure runways. Each config has a name and a default runway. Different runway assignments can then be added for specific waypoints. All runways are assigned a priority that ulimately decides how they are assigned. All runways are initially assigned 0. The config default runway is set to 1. For the SID specific one's assign priorities of at least 2 or more depending on config. All this config is saved in a file named `customconfigs.json` that needs to be placed in the same folder as the `DelHel.dll` plugin.
 
@@ -349,26 +351,26 @@ The root objects are the name of the config, followed by a config object as valu
 
 #### `config` object
 
-| Key       | Type         | Description                                                                       | Required |
-| --------- | ------------ | --------------------------------------------------------------------------------- | -------- |
-| def       | `string`     | Default runway to assign of SID waypoint not on the `sids` list.                  | Yes      |
-| sids      | `collection` | Collection of child-elements containing SID-waypoint specific config.             | Yes      |
+| Key  | Type         | Description                                                           | Required |
+| ---- | ------------ | --------------------------------------------------------------------- | -------- |
+| def  | `string`     | Default runway to assign of SID waypoint not on the `sids` list.      | Yes      |
+| sids | `collection` | Collection of child-elements containing SID-waypoint specific config. | Yes      |
 
 #### `sids` collection
 
 Each SID element has the RNAV-WAYPOINT as the key, followed by the runway configs as value.
 
-| Key       | Type         | Description                                                                       | Required |
-| --------- | ------------ | --------------------------------------------------------------------------------- | -------- |
-| rwys      | `collection` | Collection of child-elements containing runway configurations.                    | Yes      |
+| Key  | Type         | Description                                                    | Required |
+| ---- | ------------ | -------------------------------------------------------------- | -------- |
+| rwys | `collection` | Collection of child-elements containing runway configurations. | Yes      |
 
 #### `rwys` collection
 
 Each runway uses it's number as the key and containing only one setting for the priority within.
 
-| Key       | Type         | Description                                                                       | Required |
-| --------- | ------------ | --------------------------------------------------------------------------------- | -------- |
-| prio      | `int`        | Priority for assiging this runway, should be >= 2 to be higher than the default.  | Yes      |
+| Key  | Type  | Description                                                                      | Required |
+| ---- | ----- | -------------------------------------------------------------------------------- | -------- |
+| prio | `int` | Priority for assiging this runway, should be >= 2 to be higher than the default. | Yes      |
 
 ## Contributing
 
