@@ -94,6 +94,9 @@
     <ClInclude Include="RadarScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="rwy_config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DelHel.rc">
@@ -110,6 +113,9 @@
       <Filter>Resource Files</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="..\routing.json">
+      <Filter>Resource Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\customconfigs.json">
       <Filter>Resource Files</Filter>
     </CopyFileToFolders>
   </ItemGroup>

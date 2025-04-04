@@ -20,6 +20,7 @@
 #include "validation.h"
 #include "flightplan.h"
 #include "sid.h"
+#include "rwy_config.h"
 #include "RadarScreen.h"
 
 using json = nlohmann::json;
@@ -51,15 +52,19 @@ private:
 	bool topSkyAvailable;
 	bool ccamsAvailable;
 	bool preferTopSkySquawkAssignment;
+	bool customConfigActive;
+	std::string customRunwayConfig;
 	std::future<std::string> latestVersion;
 	std::map<std::string, airport> airports;
 	std::vector<std::string> processed;
+	std::map<std::string, rwy_config> runwayConfigs;
 	RadarScreen* radarScreen;
 
 	void LoadSettings();
 	void SaveSettings();
 	void ReadRoutingConfig();
 	void ReadAirportConfig();
+	void ReadCustomConfigs();
 	void UpdateActiveAirports();
 
 	validation ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap, bool validateOnly = false);

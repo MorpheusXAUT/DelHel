@@ -223,12 +223,16 @@
     <CopyFileToFolders Include="..\routing.json">
       <FileType>Document</FileType>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="..\customconfigs.json">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
     <None Include="DelHel.def" />
     <None Include="res\DelHel.rc2" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="airport.h" />
     <ClInclude Include="CDelHel.h" />
+    <ClInclude Include="rwy_config.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="DelHel.h" />
     <ClInclude Include="flightplan.h" />
