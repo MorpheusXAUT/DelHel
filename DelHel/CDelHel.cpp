@@ -917,24 +917,27 @@ validation CDelHel::ProcessFlightPlan(EuroScopePlugIn::CFlightPlan& fp, bool nap
 			return res;
 		}
 
-		if (this->radarScreen == nullptr) {
-			this->LogDebugMessage("Radar screen not initialised, cannot trigger automatic squawk assignment via TopSky or CCAMS", cs);
-		}
-		else {
-			if (this->preferTopSkySquawkAssignment && this->topSkyAvailable) {
-				this->radarScreen->StartTagFunction(cs.c_str(), nullptr, 0, cs.c_str(), TOPSKY_PLUGIN_NAME, TOPSKY_TAG_FUNC_ASSIGN_SQUAWK, POINT(), RECT());
-				this->LogDebugMessage("Triggered automatic squawk assignment via TopSky", cs);
-			}
-			else if (this->ccamsAvailable) {
-				this->radarScreen->StartTagFunction(cs.c_str(), nullptr, 0, cs.c_str(), CCAMS_PLUGIN_NAME, CCAMS_TAG_FUNC_ASSIGN_SQUAWK_AUTO, POINT(), RECT());
-				this->LogDebugMessage("Triggered automatic squawk assignment via CCAMS", cs);
-			}
-			else if (this->topSkyAvailable) {
-				this->radarScreen->StartTagFunction(cs.c_str(), nullptr, 0, cs.c_str(), TOPSKY_PLUGIN_NAME, TOPSKY_TAG_FUNC_ASSIGN_SQUAWK, POINT(), RECT());
-				this->LogDebugMessage("Triggered automatic squawk assignment via TopSky", cs);
+		std::string assignedSquawk = cad.GetSquawk();
+		if (assignedSquawk.empty() || assignedSquawk == "2000") {
+			if (this->radarScreen == nullptr) {
+				this->LogDebugMessage("Radar screen not initialised, cannot trigger automatic squawk assignment via TopSky or CCAMS", cs);
 			}
 			else {
-				this->LogDebugMessage("Neither TopSky nor CCAMS are loaded, cannot trigger automatic squawk assignment", cs);
+				if (this->preferTopSkySquawkAssignment && this->topSkyAvailable) {
+					this->radarScreen->StartTagFunction(cs.c_str(), nullptr, 0, cs.c_str(), TOPSKY_PLUGIN_NAME, TOPSKY_TAG_FUNC_ASSIGN_SQUAWK, POINT(), RECT());
+					this->LogDebugMessage("Triggered automatic squawk assignment via TopSky", cs);
+				}
+				else if (this->ccamsAvailable) {
+					this->radarScreen->StartTagFunction(cs.c_str(), nullptr, 0, cs.c_str(), CCAMS_PLUGIN_NAME, CCAMS_TAG_FUNC_ASSIGN_SQUAWK_AUTO, POINT(), RECT());
+					this->LogDebugMessage("Triggered automatic squawk assignment via CCAMS", cs);
+				}
+				else if (this->topSkyAvailable) {
+					this->radarScreen->StartTagFunction(cs.c_str(), nullptr, 0, cs.c_str(), TOPSKY_PLUGIN_NAME, TOPSKY_TAG_FUNC_ASSIGN_SQUAWK, POINT(), RECT());
+					this->LogDebugMessage("Triggered automatic squawk assignment via TopSky", cs);
+				}
+				else {
+					this->LogDebugMessage("Neither TopSky nor CCAMS are loaded, cannot trigger automatic squawk assignment", cs);
+				}
 			}
 		}
 
