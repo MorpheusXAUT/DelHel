@@ -338,6 +338,9 @@ void CDelHel::OnFlightPlanDisconnect(EuroScopePlugIn::CFlightPlan FlightPlan)
 
 void CDelHel::OnAirportRunwayActivityChanged()
 {
+	this->LogMessage("Runway selection dialog closed, no longer using custom runway config", "Config");
+	this->customRunwayConfig = "";
+
 	this->UpdateActiveAirports();
 }
 
